@@ -1,0 +1,14 @@
+{
+  "name": "Delux Financial Solutions",
+  "short_name": "Delux",
+  "description": "Credit education, credit building, and financial guidance in Houston, Texas.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#12100b",
+  "theme_color": "#12100b",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "type": "image/png", "sizes": "180x180", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,127 @@
+<script>
+  // Runs before the first paint, so a stored choice never arrives as a flash of
+  // the wrong theme. The document is the one source of the resolved value:
+  // everything after this reads data-theme rather than storage.
+  //
+  // Dark is the default rather than the system preference, because the brand is
+  // a gold mark on a near-black ground. System is one of the four choices in the
+  // footer picker for anyone who wants it.
+  ;(function () {
+    var root = document.documentElement
+    var stored = null
+    try {
+      stored = localStorage.getItem('delux-theme')
+    } catch (ignored) {}
+    var dark = !window.matchMedia || window.matchMedia('(prefers-color-scheme: dark)').matches
+    root.setAttribute('data-theme-choice', stored || 'dark')
+    root.setAttribute('data-theme', !stored ? 'dark' : stored === 'system' ? (dark ? 'dark' : 'light') : stored)
+    try {
+      if (localStorage.getItem('delux-lang') === 'es') root.lang = 'es'
+    } catch (ignored) {}
+  })()
+</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<!-- The dark ground the site opens on, filled from the token at build time. The
+     script rewrites it to whatever the chosen theme actually paints, so this is
+     what the browser chrome takes before the module runs and on a visit that
+     never runs it. -->
+<meta name="theme-color" content="<!--themecolor-->" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://deluxlavello.com/og-card.png" />
+<link rel="preload" as="image" type="image/webp" href="/brand/logo-mark-148.webp" fetchpriority="high" />
+<link rel="preconnect" href="https://sunday.tail1f78d7.ts.net" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/source-sans-3-latin-variable.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/source-serif-4-latin-variable.woff2" crossorigin />
+<link rel="stylesheet" href="/src/site.css" />
+<script>
+  ;(function () {
+    var endpoint = 'https://sunday.tail1f78d7.ts.net/report'
+    var site = 'Delux Financial Solutions'
+    var sent = 0
+    function report(kind, message, stack) {
+      if (sent >= 10) return
+      sent += 1
+      try {
+        var body = JSON.stringify({
+          site: site,
+          kind: kind,
+          message: String(message || 'Unknown error').slice(0, 1500),
+          stack: String(stack || '').slice(0, 4000),
+          url: location.href,
+          userAgent: navigator.userAgent,
+        })
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(endpoint, body)
+        } else {
+          fetch(endpoint, { method: 'POST', body: body, keepalive: true }).catch(function () {})
+        }
+      } catch (ignored) {}
+    }
+    // Capture phase, because element load failures fire error events that do not bubble.
+    window.addEventListener(
+      'error',
+      function (event) {
+        if (event.target && event.target !== window && event.target.tagName) {
+          report(
+            'resource',
+            'Failed to load ' +
+              event.target.tagName.toLowerCase() +
+              ': ' +
+              (event.target.src || event.target.href || '')
+          )
+        } else {
+          report('uncaught', event.message, event.error && event.error.stack)
+        }
+      },
+      true
+    )
+    window.addEventListener('unhandledrejection', function (event) {
+      var reason = event.reason
+      report('rejection', reason && reason.message ? reason.message : reason, reason && reason.stack)
+    })
+    var consoleError = console.error
+    console.error = function () {
+      var parts = []
+      for (var i = 0; i < arguments.length; i += 1) {
+        var piece = arguments[i]
+        if (piece && piece.stack) {
+          parts.push(piece.stack)
+        } else if (typeof piece === 'object') {
+          try {
+            parts.push(JSON.stringify(piece))
+          } catch (ignored) {
+            parts.push(String(piece))
+          }
+        } else {
+          parts.push(String(piece))
+        }
+      }
+      report('console', parts.join(' '))
+      return consoleError.apply(console, arguments)
+    }
+    if (window.fetch) {
+      var originalFetch = window.fetch
+      window.fetch = function (input) {
+        var target = typeof input === 'string' ? input : (input && input.url) || ''
+        // A report that fails must not be reported, or one unreachable collector
+        // becomes a loop of requests to it.
+        if (target.indexOf(endpoint) === 0) return originalFetch.apply(window, arguments)
+        return originalFetch.apply(window, arguments).then(
+          function (response) {
+            if (response.status >= 500) report('http', 'HTTP ' + response.status + ' from ' + target.split('?')[0])
+            return response
+          },
+          function (error) {
+            report(
+              'network',
+              (error && error.message ? error.message : String(error)) + ' fetching ' + target.split('?')[0]
+            )
+            throw error
+          }
+        )
+      }
+    }
+  })()
+</script>

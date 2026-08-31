@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.env
+.env.*
+# The example carries names and no values, and a fresh clone needs it to know
+# what the code reads.
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+*.iml
+.vercel/
+
+.intelligence/
+INTELLIGENCE.md
+.claude
+.fleet/
+*.sublime-*
+.history/
+.vercel
