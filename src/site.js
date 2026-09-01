@@ -144,7 +144,12 @@ document.querySelectorAll('.site-nav a, .site-footer a, .mega-link').forEach((li
   if (link.getAttribute('href') === here) link.setAttribute('aria-current', 'page')
 })
 
-const thisYear = String(new Date().getFullYear())
+// The firm's own year rather than the reader's: east of Texas the two differ
+// for the last hours of December, and the line this fills names the firm.
+const thisYear = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/Chicago',
+  year: 'numeric',
+}).format(new Date())
 document.querySelectorAll('[data-year]').forEach((slot) => {
   slot.textContent = thisYear
 })

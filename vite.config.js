@@ -11,9 +11,15 @@ const { version } = JSON.parse(readFileSync(page('package.json'), 'utf8'))
 // the ground named in one place rather than two that drift apart.
 const themeColor = readFileSync(page('brand/tokens.css'), 'utf8').match(/--delux-black:\s*(#[0-9a-f]{3,8})/i)?.[1]
 
+// The firm's own year. The build runs in CI at UTC, which turns the year over
+// six hours before Texas does, and the runtime slot is filled from the
+// visitor's clock; both name the same business, so both read the same zone.
+const ZONE = 'America/Chicago'
+const currentYear = () => new Intl.DateTimeFormat('en-CA', { timeZone: ZONE, year: 'numeric' }).format(new Date())
+
 const expand = (html) =>
   html.replace(/<!--([a-z-]+)-->/g, (marker, name) => {
-    if (name === 'year') return String(new Date().getFullYear())
+    if (name === 'year') return currentYear()
     if (name === 'version') return version
     if (name === 'themecolor') return themeColor ?? ''
     const file = page(`partials/${name}.html`)
