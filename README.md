@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.36.0-B89A63?style=for-the-badge" alt="Version 2026.36.0" />
+  <img src="https://img.shields.io/badge/version-2026.36.1-B89A63?style=for-the-badge" alt="Version 2026.36.1" />
   <img src="https://img.shields.io/badge/Vite-7-B89A63?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 7" />
   <img src="https://img.shields.io/badge/JavaScript-B89A63?style=for-the-badge&logo=javascript&logoColor=white" alt="JavaScript" />
   <img src="https://img.shields.io/badge/Vercel-B89A63?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
@@ -124,7 +124,7 @@ Every route in the build is listed in `rollupOptions.input`, so a new page is a 
 
 ## License
 
-Copyright (c) 2026 Delux L Avello LLC. All rights reserved.
+Copyright (c) 2026 TaylorURL LLC. All rights reserved.
 
 <br />
 

@@ -1,7 +1,8 @@
 {
   "name": "deluxlavello-com",
   "private": true,
-  "version": "2026.36.0",
+  "license": "UNLICENSED",
+  "version": "2026.36.1",
   "description": "Delux Financial Solutions — credit education, credit building, and financial guidance in Houston, TX.",
   "type": "module",
   "scripts": {
