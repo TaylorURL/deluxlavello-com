@@ -425,7 +425,6 @@ img {
 a,
 button,
 .btn,
-.card__link,
 .contact-card,
 .skip-link {
   cursor: pointer;
@@ -436,7 +435,6 @@ button,
 a:focus-visible,
 button:focus-visible,
 .btn:focus-visible,
-.card__link:focus-visible,
 .contact-card:focus-visible,
 .skip-link:focus-visible {
   outline: var(--s1) solid var(--focus-ring);
@@ -758,18 +756,6 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: var(--s3);
-}
-
-.mt-4 {
-  margin-top: var(--s4);
-}
-
-.mt-5 {
-  margin-top: var(--s5);
-}
-
-.mt-6 {
-  margin-top: var(--s6);
 }
 
 .mt-7 {
@@ -1498,22 +1484,6 @@ button:disabled {
   flex: 1;
   font-size: var(--text-sm);
   color: var(--text-soft);
-}
-
-.card__link {
-  font-size: var(--text-sm);
-  font-weight: 600;
-  text-decoration: none;
-  border-bottom: var(--border) solid transparent;
-  align-self: flex-start;
-  transition:
-    border-color var(--duration-base) var(--ease),
-    color var(--duration-base) var(--ease);
-}
-
-.card__link:hover {
-  border-color: currentColor;
-  color: var(--accent-ink-strong);
 }
 
 .steps {
