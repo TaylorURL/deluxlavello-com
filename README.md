@@ -11,9 +11,12 @@
   The website for Delux L Avello LLC — a static multi-page site built with Vite.<br />
   Live at <a href="https://deluxlavello.com">deluxlavello.com</a>.
 </p>
+<p align="center">
+  <sub>Published for reading. Proprietary — see <a href="LICENSE.md">LICENSE.md</a>. Outside contributions are not accepted.</sub>
+</p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.36.2-B89A63?style=for-the-badge" alt="Version 2026.36.2" />
+  <img src="https://img.shields.io/badge/version-2026.36.3-B89A63?style=for-the-badge" alt="Version 2026.36.3" />
   <img src="https://img.shields.io/badge/Vite-7-B89A63?style=for-the-badge&logo=vite&logoColor=white" alt="Vite 7" />
   <img src="https://img.shields.io/badge/JavaScript-B89A63?style=for-the-badge&logo=javascript&logoColor=white" alt="JavaScript" />
   <img src="https://img.shields.io/badge/Vercel-B89A63?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
@@ -62,7 +65,7 @@ npm run dev           # Vite dev server
 npm run build         # writes every route into dist/
 ```
 
-Node 22 is what the project builds on. Nothing needs configuring to run locally: there is no backend, no API key, and no `.env` — the pages are static, and the only network call the site makes is the error report in `partials/headcommon.html`.
+Node 22 is what the project builds on. Nothing needs configuring to run locally: there is no API key and no service to sign in to — the pages are static, and the only network call the site makes is the error report in `partials/headcommon.html`. `api/version.js` is the one thing served that is not a file on disk. It reads `VERCEL_GIT_COMMIT_SHA`, which Vercel sets on every build; a local run without it answers `dev`.
 
 ### Scripts
 
@@ -83,7 +86,7 @@ Node 22 is what the project builds on. Nothing needs configuring to run locally:
 - **Styles are a semantic layer over brand primitives.** [src/site.css](src/site.css) aliases the gold ramp and the neutrals in [brand/tokens.css](brand/tokens.css) into names like `--surface` and `--accent-ink`, then redefines that layer for the dark, light, and slate themes. A component reads the semantic name, so a theme is one block of overrides.
 - **The geometry is square.** The radius tokens are zero, and a block is separated by its ground and the rule around it rather than by a card. `--surface` and `--surface-raised` follow from each theme's own raised ground, so a card is never described per theme.
 - **Glass is spent where a reader looks through it.** The bar and the menu panel take a backdrop filter; `.ambient` is the fixed field of light that gives the blur something to sample, which is why `body` paints no background of its own. Where the blur cannot run, and for a reader who asks for less transparency, one block of token overrides puts both back to opaque.
-- **One sprite carries every mark.** [partials/icons.html](partials/icons.html) holds nineteen of them: nine drawn on a 24-unit grid for the interface and ten on a 64-unit grid for the spot art. Every base shape is `currentColor` and every emphasis is `var(--accent)`, so a mark takes the ink and the accent of whichever theme it lands in.
+- **One sprite carries every mark.** [partials/icons.html](partials/icons.html) holds sixteen of them: eight drawn on a 24-unit grid for the interface and eight on a 64-unit grid for the spot art. Every base shape is `currentColor` and every emphasis is `var(--accent)`, so a mark takes the ink and the accent of whichever theme it lands in.
 - **Theme and language resolve before the first paint.** An inline script in `partials/headcommon.html` reads the stored choice, so neither arrives as a flash of the other. `data-theme` on the root is the resolved value and `data-theme-choice` is the preference behind it, which is `dark` until someone picks otherwise.
 - **Browser errors are reported.** The same head script posts uncaught errors, rejections, failed resource loads, and 5xx responses to the error collector, capped at ten per page view.
 
@@ -116,8 +119,9 @@ deluxlavello-com/
 ├── public/                    Served at the web root — favicon.svg, apple-touch-icon.png,
 │                              site.webmanifest, og-card.png (1200x630), robots.txt,
 │                              sitemap.xml, llms.txt, /fonts/, /brand/, /photos/
+├── api/version.js             The commit the running deployment was built from, at /api/version
 ├── vite.config.js             MPA config, the two build plugins, and the route table
-└── vercel.json                Cache headers for the hashed assets, the fonts, and the brand files
+└── vercel.json                Security headers, and caching for the hashed assets, the fonts and the brand files
 ```
 
 Every route in the build is listed in `rollupOptions.input`, so a new page is a directory, an `index.html`, and one line there.
