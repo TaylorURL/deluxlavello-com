@@ -157,6 +157,7 @@
 
   --z-base: 0;
   --z-header: 40;
+  --z-thumb: 45;
   --z-nav: 50;
   --z-nav-panel: 55;
   --z-nav-toggle: 60;
@@ -2294,7 +2295,47 @@ html[lang='es'] .site-footer__note {
 /* A finger needs a target a text link does not give it. On a touch screen the
    footer's links keep their look and gain the height, so a row of them stops
    being three lines of type that have to be hit exactly. */
+/* Shown only where the thumb is the pointer; the desktop bar already carries
+   the same two actions in reach. */
+.thumb-bar {
+  display: none;
+}
+
 @media (max-width: 860px) {
+  /* The number and the booking page are this site's two real actions, and on a
+     phone both of them sit inside the menu once the reader has scrolled past
+     the hero. The bar carries them at the edge the thumb already rests on. It
+     sits under the open menu rather than over it, and it clears the device
+     inset so nothing lands under the home indicator. */
+  .thumb-bar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: var(--z-thumb);
+    display: flex;
+    gap: var(--s2);
+    padding: var(--s3) var(--s4);
+    padding-bottom: calc(var(--s3) + env(safe-area-inset-bottom));
+    background: var(--bg);
+    border-top: var(--border) solid var(--line);
+  }
+
+  .thumb-bar .btn {
+    flex: 1 1 auto;
+    padding-inline: var(--s3);
+    font-size: var(--text-sm);
+  }
+
+  .thumb-bar .btn--ghost {
+    flex: 0 1 auto;
+  }
+
+  /* The bar stands over the foot of the page, so the page ends above it. */
+  body {
+    padding-bottom: calc(var(--touch) + var(--s6) + env(safe-area-inset-bottom));
+  }
+
   .site-footer__links a,
   .site-footer__reach a,
   .site-footer__legal a {
