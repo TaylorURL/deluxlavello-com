@@ -325,10 +325,10 @@ const applyLanguage = (language) => {
   }
 
   nodes.forEach((node, index) => {
-    const english = englishSnapshot.text[index]
-    if (english === undefined) return
-    const spanish = language === 'es' ? words[tidy(english)] : null
-    if (!spanish) {
+    const english = englishSnapshot.text[index] ?? null
+    if (english === null) return
+    const spanish = language === 'es' ? (words[tidy(english)] ?? null) : null
+    if (spanish === null) {
       node.nodeValue = english
       return
     }
@@ -337,10 +337,10 @@ const applyLanguage = (language) => {
 
   labelled.forEach((element, index) => {
     LABELLED.forEach((name, slot) => {
-      const english = englishSnapshot.labels[index]?.[slot]
-      if (english == null) return
-      const spanish = language === 'es' ? words[tidy(english)] : null
-      element.setAttribute(name, spanish || english)
+      const english = englishSnapshot.labels[index]?.[slot] ?? null
+      if (english === null) return
+      const spanish = language === 'es' ? (words[tidy(english)] ?? null) : null
+      element.setAttribute(name, spanish === null ? english : spanish)
     })
   })
 

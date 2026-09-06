@@ -30,7 +30,6 @@ export default [
       'no-useless-concat': 'error',
       'no-else-return': 'error',
       eqeqeq: ['error', 'smart'],
-      curly: ['error', 'multi-line'],
       'object-shorthand': 'error',
       'prefer-template': 'error',
       'prefer-arrow-callback': 'error',
