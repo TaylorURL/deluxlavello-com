@@ -125,6 +125,10 @@
     </p>
   </div>
 </footer>
+<div class="thumb-bar">
+  <a class="btn btn--gold" href="/contact/">Schedule a Consultation</a>
+  <a class="btn btn--ghost" href="tel:+17707586195">Call</a>
+</div>
 <div data-taylorurl-bar>
   <style>
     [data-taylorurl-bar] {
@@ -134,7 +138,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      min-height: 40px;
+      min-height: 44px;
       padding: 0 1rem;
       border-top: 1px solid color-mix(in oklab, currentColor 13%, transparent);
       background: transparent;
@@ -144,6 +148,13 @@
       line-height: 1;
     }
     [data-taylorurl-bar] a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      /* The type stays 11px; the box around it is what a thumb has to hit, so
+         it carries the target size rather than the letters growing to meet it. */
+      min-height: 44px;
+      min-width: 44px;
       color: inherit;
       text-decoration: none;
       opacity: 0.74;
