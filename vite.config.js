@@ -46,6 +46,17 @@ const partials = () => ({
 
 const dictionary = JSON.parse(readFileSync(page('i18n/es.json'), 'utf8'))
 
+// The named entities this site's pages actually use, plus the numeric forms.
+// Anything unrecognised is left standing rather than guessed at.
+const NAMED = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: '\u00a0', copy: '\u00a9', middot: '\u00b7' }
+
+const decodeEntities = (text) =>
+  text.replace(/&(?:#(\d+)|#[xX]([\da-fA-F]+)|([a-zA-Z][\da-zA-Z]*));/g, (whole, dec, hex, name) => {
+    if (dec !== undefined) return String.fromCodePoint(Number(dec))
+    if (hex !== undefined) return String.fromCodePoint(parseInt(hex, 16))
+    return name in NAMED ? NAMED[name] : whole
+  })
+
 // English is what the file says and what a crawler is served. Spanish rides
 // along as a lookup keyed on the English string itself, so a page carries no
 // translation markup and a phrase written once is translated once. Only the
@@ -55,9 +66,16 @@ const translations = () => ({
   transformIndexHtml: {
     order: 'post',
     handler(html) {
+      // Matched against the text the runtime sees rather than the markup the file
+      // carries. src/site.js reads a text node, which the parser has already
+      // decoded, and keys its lookup on that with the whitespace collapsed. So
+      // the same two steps run here in the same order: entities first, then
+      // whitespace. Comparing raw markup drops every phrase the formatter
+      // wrapped over two lines, and every phrase holding an escaped character.
       const used = {}
+      const searchable = decodeEntities(html).replace(/\s+/g, ' ')
       for (const [english, spanish] of Object.entries(dictionary)) {
-        if (html.includes(english)) used[english] = spanish
+        if (searchable.includes(english)) used[english] = spanish
       }
       if (!Object.keys(used).length) return html
       // The payload is inlined into the document, so an unescaped < in any entry
