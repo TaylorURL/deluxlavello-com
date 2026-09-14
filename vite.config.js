@@ -17,11 +17,18 @@ const themeColor = readFileSync(page('brand/tokens.css'), 'utf8').match(/--delux
 const ZONE = 'America/Chicago'
 const currentYear = () => new Intl.DateTimeFormat('en-CA', { timeZone: ZONE, year: 'numeric' }).format(new Date())
 
-const expand = (html) =>
+// The consultation button sits in the shared header and thumb bar. Everywhere
+// else it leads to the contact page; on the contact page it leads to the
+// booking page instead of back to itself.
+const BOOKING = 'https://info.deluxlavello.com/consultation'
+const consultationHref = (filename) => (filename === page('contact/index.html') ? BOOKING : '/contact/')
+
+const expand = (html, filename) =>
   html.replace(/<!--([a-z-]+)-->/g, (marker, name) => {
     if (name === 'year') return currentYear()
     if (name === 'version') return version
     if (name === 'themecolor') return themeColor ?? ''
+    if (name === 'consultation') return consultationHref(filename)
     const file = page(`partials/${name}.html`)
     return existsSync(file) ? readFileSync(file, 'utf8') : marker
   })
@@ -30,12 +37,12 @@ const partials = () => ({
   name: 'partials',
   transformIndexHtml: {
     order: 'pre',
-    handler(html) {
+    handler(html, { filename }) {
       // A partial may itself carry a marker, so expand until the page settles.
       // The pass cap stops a partial that includes itself from looping forever.
       let document = html
       for (let pass = 0; pass < 5; pass += 1) {
-        const next = expand(document)
+        const next = expand(document, filename)
         if (next === document) break
         document = next
       }
