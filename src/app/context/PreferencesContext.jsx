@@ -32,21 +32,22 @@ const applyTheme = (choice) => {
   const root = document.documentElement;
   root.setAttribute('data-theme-choice', choice);
   root.setAttribute('data-theme', choice === 'system' ? (systemDark() ? 'dark' : 'light') : choice);
-  // The browser chrome takes its colour from the same token the page paints
-  // with, so a theme swap never leaves the two disagreeing.
+  // The browser chrome takes its colour from the strip at the top of the page,
+  // so the two read as one edge whichever theme is showing.
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', getComputedStyle(document.body).backgroundColor);
+  const top = document.querySelector('.utility') ?? document.body;
+  if (meta) meta.setAttribute('content', getComputedStyle(top).backgroundColor);
 };
 
 export function PreferencesProvider({ children }) {
-  const [theme, setThemeState] = useState('dark');
+  const [theme, setThemeState] = useState('light');
   const [language, setLanguageState] = useState('en');
 
   useEffect(() => {
     // Read once after adoption, which is the only moment storage can be read
     // without the server and the browser disagreeing about the markup.
     /* eslint-disable react-hooks/set-state-in-effect */
-    setThemeState(readStored(THEME_KEY) || 'dark');
+    setThemeState(readStored(THEME_KEY) || 'light');
     setLanguageState(readStored(LANG_KEY) === 'es' ? 'es' : 'en');
     /* eslint-enable react-hooks/set-state-in-effect */
   }, []);

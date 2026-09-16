@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 export default function Services() {
   return (
     <>
-      <section className="bg-[radial-gradient(ellipse_70%_55%_at_50%_0%,var(--hero-glow),transparent_70%)] pb-16 pt-24 max-[860px]:pb-12 max-[860px]:pt-16">
+      <section className="hero band pb-20 pt-24 max-[860px]:pb-14 max-[860px]:pt-16">
         <div className="mx-auto w-[calc(100%-2.5rem)] max-w-shell flex flex-col *:m-0 gap-8">
           <span className="eyebrow">Services</span>
           <h1 className="display text-hero max-w-[46ch] [overflow-wrap:anywhere]">

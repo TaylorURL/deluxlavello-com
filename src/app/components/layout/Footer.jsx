@@ -7,8 +7,8 @@ import useIsCurrent from '@hooks/useIsCurrent.js';
 import { usePreferences } from '@context/PreferencesContext.jsx';
 
 const THEMES = [
-  { value: 'dark', label: 'Dark' },
   { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
   { value: 'gray', label: 'Slate' },
   { value: 'system', label: 'System' },
 ];
@@ -27,7 +27,7 @@ export default function Footer({ year, children }) {
   const { theme, setTheme, language, setLanguage } = usePreferences();
   // The pickers open one at a time.
   const [openPicker, setOpenPicker] = useState(null);
-  const themeName = THEMES.find((option) => option.value === theme)?.label ?? 'Dark';
+  const themeName = THEMES.find((option) => option.value === theme)?.label ?? 'Light';
 
   return (
     <footer className="site-footer">
