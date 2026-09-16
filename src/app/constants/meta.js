@@ -42,6 +42,7 @@ export const META = {
   },
   '/education/': {
     ogType: 'article',
+    article: { published: '2026-08-23', modified: '2026-08-26', author: 'Darian Avello' },
     title: 'Credit Education and Resources | Delux Financial Solutions',
     description:
       'Plain-language credit education: credit reports, credit scores, utilization, payment history, credit mix, and the mistakes that cost people the most.',

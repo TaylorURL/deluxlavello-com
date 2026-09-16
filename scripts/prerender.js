@@ -113,6 +113,13 @@ const document = ({ path, meta, body, stamp }) => {
     meta.robots ? `<meta name="robots" content="${escapeAttr(meta.robots)}" />` : null,
     path ? `<link rel="canonical" href="${href}" />` : null,
     `<meta property="og:type" content="${meta.ogType ?? 'website'}" />`,
+    ...(meta.article
+      ? [
+          `<meta property="article:published_time" content="${meta.article.published}" />`,
+          `<meta property="article:modified_time" content="${meta.article.modified}" />`,
+          `<meta property="article:author" content="${escapeAttr(meta.article.author)}" />`,
+        ]
+      : []),
     `<meta property="og:title" content="${escapeAttr(meta.title)}" />`,
     `<meta property="og:description" content="${escapeAttr(meta.description)}" />`,
     `<meta property="og:url" content="${href}" />`,
