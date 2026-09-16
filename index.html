@@ -16,9 +16,9 @@
       // the wrong theme. The document is the one source of the resolved value:
       // everything after this reads data-theme rather than storage.
       //
-      // Dark is the default rather than the system preference, because the brand is
-      // a gold mark on a near-black ground. System is one of the four choices in the
-      // footer picker for anyone who wants it.
+      // Light is the default rather than the system preference: white pages framed
+      // by navy bands. System is one of the four choices in the footer picker for
+      // anyone who wants it.
       (function () {
         var root = document.documentElement;
         var stored = null;
@@ -26,10 +26,10 @@
           stored = localStorage.getItem('delux-theme');
         } catch (ignored) {}
         var dark = !window.matchMedia || window.matchMedia('(prefers-color-scheme: dark)').matches;
-        root.setAttribute('data-theme-choice', stored || 'dark');
+        root.setAttribute('data-theme-choice', stored || 'light');
         root.setAttribute(
           'data-theme',
-          !stored ? 'dark' : stored === 'system' ? (dark ? 'dark' : 'light') : stored,
+          !stored ? 'light' : stored === 'system' ? (dark ? 'dark' : 'light') : stored,
         );
         try {
           if (localStorage.getItem('delux-lang') === 'es') root.lang = 'es';
@@ -39,7 +39,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <!-- The dark ground the site opens on, filled from the token at build time. The
+    <!-- The navy strip the site opens under, filled from the token at build time. The
          script rewrites it to whatever the chosen theme actually paints, so this is
          what the browser chrome takes before the module runs and on a visit that
          never runs it. -->

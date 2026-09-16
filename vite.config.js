@@ -11,7 +11,7 @@ const { version } = JSON.parse(readFileSync(here('./package.json'), 'utf8'));
 // custom property. Lifting the value out of the token block at build time keeps
 // the ground named in one place rather than two that drift apart.
 const themeColor = readFileSync(here('./src/index.css'), 'utf8').match(
-  /--delux-black:\s*(#[0-9a-f]{3,8})/i,
+  /--delux-navy-950:\s*(#[0-9a-f]{3,8})/i,
 )?.[1];
 
 const shellValues = () => ({
