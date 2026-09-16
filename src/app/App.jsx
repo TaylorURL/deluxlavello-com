@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { ROUTE_TABLE } from '@app/routeTable.js';
-import ClickRipples from '@components/layout/ClickRipples.jsx';
 import Footer from '@components/layout/Footer.jsx';
 import Header from '@components/layout/Header.jsx';
 import IconSprite from '@components/layout/IconSprite.jsx';
@@ -40,7 +39,6 @@ function Site({ routes, year: servedYear }) {
 
   return (
     <>
-      <div className="ambient" aria-hidden="true"></div>
       <a className="skip-link" href="#main">
         Skip to Content
       </a>
@@ -68,7 +66,6 @@ function Site({ routes, year: servedYear }) {
         <SplitRail version={__BUILD_VERSION__} year={Number(year)} />
       </Footer>
       <ThumbBar />
-      <ClickRipples />
     </>
   );
 }

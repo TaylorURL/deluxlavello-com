@@ -83,8 +83,8 @@ const makeDom = (html, url, { theme, lang } = {}) => {
   window.HTMLElement.prototype.scrollIntoView = () => {};
   // The head bootstrap does this before the first paint in a browser.
   const root = window.document.documentElement;
-  root.setAttribute('data-theme-choice', theme || 'dark');
-  root.setAttribute('data-theme', !theme || theme === 'system' ? 'dark' : theme);
+  root.setAttribute('data-theme-choice', theme || 'light');
+  root.setAttribute('data-theme', !theme ? 'light' : theme === 'system' ? 'dark' : theme);
   for (const name of GLOBALS) {
     Object.defineProperty(globalThis, name, {
       value: window[name],
@@ -178,7 +178,7 @@ console.log('\nEnglish by default');
   check('hero heading', text(document, 'main h1'), 'Build credit that opens doors.');
   check('index entry', text(document, '.index b'), 'Credit Building');
   check('nav cta', text(document, '.site-nav .btn--gold'), 'Schedule a Consultation');
-  check('theme resolved', document.documentElement.getAttribute('data-theme'), 'dark');
+  check('theme resolved', document.documentElement.getAttribute('data-theme'), 'light');
   check('lang trigger', text(document, '[data-picker="lang"] [data-picker-value]'), 'EN');
   await unmount(root);
 }
@@ -233,14 +233,14 @@ console.log('\nTheme picker');
   await click(trigger);
   check('menu opens', menu.hidden, false);
   check('trigger expanded', trigger.getAttribute('aria-expanded'), 'true');
-  await click(document.querySelector('#picker-theme [data-value="light"]'));
-  check('theme applied', document.documentElement.getAttribute('data-theme'), 'light');
-  check('choice recorded', document.documentElement.getAttribute('data-theme-choice'), 'light');
-  check('stored', globalThis.localStorage.getItem('delux-theme'), 'light');
+  await click(document.querySelector('#picker-theme [data-value="dark"]'));
+  check('theme applied', document.documentElement.getAttribute('data-theme'), 'dark');
+  check('choice recorded', document.documentElement.getAttribute('data-theme-choice'), 'dark');
+  check('stored', globalThis.localStorage.getItem('delux-theme'), 'dark');
   check('menu closes', menu.hidden, true);
   check(
-    'light checked',
-    document.querySelector('#picker-theme [data-value="light"]').getAttribute('aria-checked'),
+    'dark checked',
+    document.querySelector('#picker-theme [data-value="dark"]').getAttribute('aria-checked'),
     'true',
   );
   check(
@@ -248,7 +248,7 @@ console.log('\nTheme picker');
     document.querySelector('#picker-theme [data-value="system"]').getAttribute('aria-checked'),
     'false',
   );
-  check('trigger names value', trigger.getAttribute('aria-label'), 'Theme: Light');
+  check('trigger names value', trigger.getAttribute('aria-label'), 'Theme: Dark');
   await unmount(root);
 }
 

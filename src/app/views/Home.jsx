@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export default function Home() {
   return (
     <>
-      <section className="bg-[radial-gradient(ellipse_70%_55%_at_50%_0%,var(--hero-glow),transparent_70%)] pb-16 pt-24 max-[860px]:pb-12 max-[860px]:pt-16">
+      <section className="hero band pb-20 pt-24 max-[860px]:pb-14 max-[860px]:pt-16">
         <div className="mx-auto w-[calc(100%-2.5rem)] max-w-shell *:m-0 grid grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center gap-16 max-[960px]:grid-cols-1 max-[960px]:gap-12">
           <div className="flex flex-col items-start gap-8 *:m-0">
             <h1 className="display text-hero max-w-[46ch] [overflow-wrap:anywhere]">
