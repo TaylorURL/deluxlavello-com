@@ -2,16 +2,16 @@
   "name": "deluxlavello-com",
   "private": true,
   "license": "UNLICENSED",
-  "version": "2026.38.0",
+  "version": "2026.38.1",
   "description": "Delux Financial Solutions — credit education, credit building, and financial guidance in Houston, TX.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint .",
     "test": "npm run build && node scripts/check-behaviour.mjs",
     "i18n": "python3 scripts/i18n-strings.py"
   },

@@ -57,32 +57,22 @@
 :root {
   --bg: var(--delux-black);
   --bg-raised: var(--delux-ink);
-  --paper: var(--delux-smoke);
-  --paper-raised: var(--delux-white);
   --text: var(--delux-bone);
   --text-soft: var(--delux-stone);
-  --paper-text: var(--delux-char);
-  --paper-text-soft: var(--delux-clay);
   --line: color-mix(in oklab, var(--delux-bone) 15%, transparent);
-  --paper-line: rgba(var(--delux-char-rgb), 0.14);
   --accent: var(--delux-gold);
   --accent-strong: var(--delux-gold-bright);
   --accent-ink: var(--delux-gold);
   --accent-ink-strong: var(--delux-gold-bright);
-  --paper-accent: var(--delux-gold-deep);
-  --paper-accent-ink: var(--delux-gold-deepest);
   --on-accent: var(--delux-black);
   --focus-ring: var(--delux-gold-bright);
   --header-bg: rgba(var(--delux-black-rgb), 0.97);
   --header-solid: rgb(var(--delux-black-rgb));
-  --nav-scrim: rgba(var(--delux-black-rgb), 0.8);
   --hero-glow: rgba(var(--delux-gold-rgb), 0.16);
   --band-glow: rgba(var(--delux-gold-rgb), 0.17);
   --glass-lit: var(--delux-gold-veil);
-  --glass-density: 10%;
   --glass-edge: color-mix(in oklab, var(--delux-gold-veil) 20%, transparent);
   --glass-drop: 0 22px 48px -30px rgba(var(--delux-black-rgb), 0.9);
-  --glass-drop-lift: 0 30px 64px -30px rgba(var(--delux-black-rgb), 0.95);
   --ambient-a: rgba(var(--delux-gold-rgb), 0.2);
   --ambient-b: rgba(var(--delux-gold-rgb), 0.13);
   color-scheme: dark;
@@ -109,7 +99,6 @@
   --leading-heading: 1.2;
   --leading-body: 1.65;
 
-  --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-display: 600;
@@ -138,17 +127,13 @@
   --radius-pill: 0px;
   --border: 1px;
   --blur-chrome: 14px;
-  --blur-pill: 24px;
   --blur-glass: 18px;
   --blur-scrim: 30px;
   /* Saturation is what separates glass from a grey wash: the blur alone drains
      the colour it samples, and the boost puts back what the eye expects. */
   --glass-saturate: 165%;
-  --shadow-pill: 0 18px 44px -18px rgba(var(--delux-black-rgb), 0.62);
   --accent-sheen: rgba(var(--delux-gold-veil-rgb), 0.55);
-  --accent-sheen-lit: rgba(var(--delux-gold-veil-rgb), 0.72);
   --accent-cast: 0 14px 30px -18px rgba(var(--delux-gold-rgb), 0.7);
-  --accent-cast-lit: 0 18px 38px -18px rgba(var(--delux-gold-rgb), 0.85);
   --header-height: 4.25rem;
   --utility-height: 2.25rem;
   --mark-height: 2.75rem;
@@ -176,32 +161,22 @@
 [data-theme='dark'] {
   --bg: var(--delux-black);
   --bg-raised: var(--delux-ink);
-  --paper: var(--delux-smoke);
-  --paper-raised: var(--delux-white);
   --text: var(--delux-bone);
   --text-soft: var(--delux-stone);
-  --paper-text: var(--delux-char);
-  --paper-text-soft: var(--delux-clay);
   --line: color-mix(in oklab, var(--delux-bone) 15%, transparent);
-  --paper-line: rgba(var(--delux-char-rgb), 0.14);
   --accent: var(--delux-gold);
   --accent-strong: var(--delux-gold-bright);
   --accent-ink: var(--delux-gold);
   --accent-ink-strong: var(--delux-gold-bright);
-  --paper-accent: var(--delux-gold-deep);
-  --paper-accent-ink: var(--delux-gold-deepest);
   --on-accent: var(--delux-black);
   --focus-ring: var(--delux-gold-bright);
   --header-bg: rgba(var(--delux-black-rgb), 0.97);
   --header-solid: rgb(var(--delux-black-rgb));
-  --nav-scrim: rgba(var(--delux-black-rgb), 0.8);
   --hero-glow: rgba(var(--delux-gold-rgb), 0.16);
   --band-glow: rgba(var(--delux-gold-rgb), 0.17);
   --glass-lit: var(--delux-gold-veil);
-  --glass-density: 10%;
   --glass-edge: color-mix(in oklab, var(--delux-gold-veil) 20%, transparent);
   --glass-drop: 0 22px 48px -30px rgba(var(--delux-black-rgb), 0.9);
-  --glass-drop-lift: 0 30px 64px -30px rgba(var(--delux-black-rgb), 0.95);
   --ambient-a: rgba(var(--delux-gold-rgb), 0.2);
   --ambient-b: rgba(var(--delux-gold-rgb), 0.13);
   color-scheme: dark;
@@ -210,32 +185,22 @@
 [data-theme='light'] {
   --bg: var(--delux-linen);
   --bg-raised: var(--delux-white);
-  --paper: var(--delux-parchment);
-  --paper-raised: var(--delux-white);
   --text: var(--delux-char);
   --text-soft: var(--delux-clay);
-  --paper-text: var(--delux-char);
-  --paper-text-soft: var(--delux-clay);
   --line: rgba(var(--delux-char-rgb), 0.15);
-  --paper-line: rgba(var(--delux-char-rgb), 0.14);
   --accent: var(--delux-gold);
   --accent-strong: var(--delux-gold-bright);
   --accent-ink: var(--delux-gold-deepest);
   --accent-ink-strong: var(--delux-gold-darkest);
-  --paper-accent: var(--delux-gold-deep);
-  --paper-accent-ink: var(--delux-gold-deepest);
   --on-accent: var(--delux-black);
   --focus-ring: var(--delux-gold-deepest);
   --header-bg: rgba(var(--delux-white-rgb), 0.97);
   --header-solid: rgb(var(--delux-white-rgb));
-  --nav-scrim: rgba(var(--delux-white-rgb), 0.82);
   --hero-glow: rgba(var(--delux-gold-rgb), 0.2);
   --band-glow: rgba(var(--delux-gold-rgb), 0.22);
   --glass-lit: var(--delux-white);
-  --glass-density: 68%;
   --glass-edge: rgba(var(--delux-char-rgb), 0.12);
   --glass-drop: 0 20px 44px -30px rgba(var(--delux-char-rgb), 0.34);
-  --glass-drop-lift: 0 28px 58px -30px rgba(var(--delux-char-rgb), 0.42);
   --ambient-a: rgba(var(--delux-gold-rgb), 0.22);
   --ambient-b: rgba(var(--delux-gold-rgb), 0.13);
   color-scheme: light;
@@ -244,32 +209,22 @@
 [data-theme='gray'] {
   --bg: var(--delux-slate);
   --bg-raised: var(--delux-slate-raised);
-  --paper: var(--delux-slate-mist);
-  --paper-raised: var(--delux-slate-mist-raised);
   --text: var(--delux-slate-bone);
   --text-soft: var(--delux-slate-stone);
-  --paper-text: var(--delux-slate-char);
-  --paper-text-soft: var(--delux-slate-clay);
   --line: color-mix(in oklab, var(--delux-slate-bone) 16%, transparent);
-  --paper-line: rgba(var(--delux-slate-char-rgb), 0.14);
   --accent: var(--delux-gold);
   --accent-strong: var(--delux-gold-bright);
   --accent-ink: var(--delux-gold-lift);
   --accent-ink-strong: var(--delux-gold-bright);
-  --paper-accent: var(--delux-gold-deep);
-  --paper-accent-ink: var(--delux-gold-deepest);
   --on-accent: var(--delux-black);
   --focus-ring: var(--delux-gold-bright);
   --header-bg: rgba(var(--delux-slate-rgb), 0.97);
   --header-solid: rgb(var(--delux-slate-rgb));
-  --nav-scrim: rgba(var(--delux-slate-rgb), 0.82);
   --hero-glow: rgba(var(--delux-gold-rgb), 0.09);
   --band-glow: rgba(var(--delux-gold-rgb), 0.11);
   --glass-lit: var(--delux-slate-bone);
-  --glass-density: 9%;
   --glass-edge: color-mix(in oklab, var(--delux-slate-bone) 19%, transparent);
   --glass-drop: 0 22px 48px -30px rgba(var(--delux-slate-char-rgb), 0.85);
-  --glass-drop-lift: 0 30px 64px -30px rgba(var(--delux-slate-char-rgb), 0.92);
   /* Slate takes a neutral light rather than the warm one the other two carry:
      gold over this ground turns olive long before it reads as warmth. */
   --ambient-a: color-mix(in oklab, var(--delux-slate-bone) 10%, transparent);
@@ -282,34 +237,18 @@
    from them, so a fourth theme never means describing a card again. */
 :root {
   --surface: color-mix(in oklab, var(--bg-raised) 96%, var(--glass-lit));
-  --surface-raised: color-mix(in oklab, var(--bg-raised) 88%, var(--glass-lit));
 
-  --glass-fill: color-mix(in oklab, var(--glass-lit) var(--glass-density), transparent);
   --glass-wash: color-mix(in oklab, var(--glass-lit) 11%, transparent);
   --glass-sheen: color-mix(in oklab, var(--glass-lit) 32%, transparent);
-  --glass-edge-lit: color-mix(in oklab, var(--accent) 48%, transparent);
-  --header-glass: color-mix(in oklab, var(--header-solid) 80%, transparent);
   /* A menu is read rather than glanced past, so the page under it stops at the
      panel's edge instead of ghosting through it. */
   --panel-glass: var(--header-solid);
   --band-glass: color-mix(in oklab, var(--bg-raised) 72%, transparent);
-  --scrim-glass: var(--nav-scrim);
-
-  /* Paper is a light surface under all three themes, so its glass takes one set
-     of values and reads the same wherever it lands. */
-  --paper-glass-fill: color-mix(in oklab, var(--paper-raised) 74%, transparent);
-  --paper-glass-wash: color-mix(in oklab, var(--delux-white) 48%, transparent);
-  --paper-glass-sheen: color-mix(in oklab, var(--delux-white) 88%, transparent);
-  --paper-glass-edge: var(--paper-line);
-  --paper-glass-edge-lit: color-mix(in oklab, var(--paper-accent) 52%, transparent);
-  --paper-glass-drop: 0 18px 40px -28px rgba(var(--delux-char-rgb), 0.42);
-  --paper-glass-drop-lift: 0 26px 54px -28px rgba(var(--delux-char-rgb), 0.5);
 
   /* Meters and tracks read a groove rather than a border, so they take their
      own value instead of the hairline the rest of the page draws with. */
   --track: color-mix(in oklab, var(--text) 17%, transparent);
   --placeholder: color-mix(in oklab, var(--glass-lit) 8%, transparent);
-  --paper-track: color-mix(in oklab, var(--paper-text) 15%, transparent);
 }
 
 *,
@@ -2593,15 +2532,10 @@ html[lang='es'] .site-footer__note {
    putting the tokens back to opaque puts the whole site back at once. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   :root {
-    --glass-fill: var(--bg-raised);
     --glass-wash: transparent;
     --header-bg: var(--header-solid);
-    --header-glass: var(--header-solid);
     --panel-glass: var(--header-solid);
     --band-glass: var(--bg-raised);
-    --scrim-glass: var(--header-solid);
-    --paper-glass-fill: var(--paper-raised);
-    --paper-glass-wash: transparent;
   }
 }
 
@@ -2609,15 +2543,10 @@ html[lang='es'] .site-footer__note {
    and for the blur behind it to stop as well. */
 @media (prefers-reduced-transparency: reduce) {
   :root {
-    --glass-fill: var(--bg-raised);
     --glass-wash: transparent;
     --header-bg: var(--header-solid);
-    --header-glass: var(--header-solid);
     --panel-glass: var(--header-solid);
     --band-glass: var(--bg-raised);
-    --scrim-glass: var(--header-solid);
-    --paper-glass-fill: var(--paper-raised);
-    --paper-glass-wash: transparent;
   }
 
   .ambient {

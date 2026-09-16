@@ -124,15 +124,14 @@ if (trigger && panel) {
 
 // One class toggle carries the bar into its floating state and back, fired by a
 // sentinel sitting at the threshold rather than by reading scroll on every frame.
-const bar = document.querySelector('.site-header')
-if (bar) {
+if (header) {
   const sentinel = document.createElement('div')
   sentinel.className = 'scroll-sentinel'
   sentinel.setAttribute('aria-hidden', 'true')
   document.body.prepend(sentinel)
   new IntersectionObserver(
     ([entry]) => {
-      bar.classList.toggle('is-floating', !entry.isIntersecting)
+      header.classList.toggle('is-floating', !entry.isIntersecting)
       setPanelOpen(false)
     },
     { threshold: 0 }
