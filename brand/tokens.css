@@ -18,31 +18,22 @@
   --delux-clay: #5c5749;
   --delux-stone: #b0aa9c;
   --delux-bone: #eae6db;
-  --delux-parchment: #e9e9ea;
-  --delux-smoke: #f1f1f2;
   --delux-linen: #f7f7f8;
   --delux-white: #ffffff;
 
   --delux-slate: #23242a;
   --delux-slate-raised: #2d2f36;
-  --delux-slate-char: #1e2026;
-  --delux-slate-clay: #565b66;
   --delux-slate-stone: #a9adb6;
   --delux-slate-bone: #e6e7ea;
-  --delux-slate-mist: #eceef1;
-  --delux-slate-mist-raised: #f8f9fb;
 
   /* Channel triples for the colours that get mixed through rgba(). Each one
      restates the hex above it, so the two have to move together or the alpha
      variants drift off the solid ones. */
   --delux-black-rgb: 18, 16, 11;
-  --delux-ink-rgb: 28, 24, 17;
   --delux-char-rgb: 32, 29, 24;
   --delux-gold-rgb: 184, 154, 99;
   --delux-gold-veil-rgb: 239, 224, 188;
-  --delux-bone-rgb: 234, 230, 219;
   --delux-white-rgb: 255, 255, 255;
   --delux-slate-rgb: 35, 36, 42;
-  --delux-slate-raised-rgb: 45, 47, 54;
   --delux-slate-char-rgb: 30, 32, 38;
 }

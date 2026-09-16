@@ -74,17 +74,17 @@ Node 22 is what the project builds on. Nothing needs configuring to run locally:
 | `npm run dev`          | Start the Vite dev server.                                                       |
 | `npm run build`        | Build every route into `dist/`.                                                  |
 | `npm run preview`      | Serve the built site.                                                            |
-| `npm test`             | Build, then load the built pages in a DOM and assert what a reader sees.         |
 | `npm run lint`         | Lint with ESLint.                                                                |
 | `npm run format`       | Format with Prettier.                                                            |
 | `npm run format:check` | Check formatting without writing.                                                |
+| `npm test`             | Build, then load the built pages in a DOM and assert what a reader sees.         |
 | `npm run i18n`         | Report the English strings `i18n/es.json` still owes, and which have gone stale. |
 
 ## How it works
 
-- **A page includes a shared block by writing its marker.** `<!--header-->` pulls in `partials/header.html`, and the plugin in [vite.config.js](vite.config.js) inlines it at build time, repeating until no markers are left so a partial can carry one of its own. `<!--year-->` and `<!--version-->` are not files: they resolve to the build year and the version in `package.json`.
+- **A page includes a shared block by writing its marker.** `<!--header-->` pulls in `partials/header.html`, and the plugin in [vite.config.js](vite.config.js) inlines it at build time, repeating until no markers are left so a partial can carry one of its own. `<!--year-->`, `<!--version-->`, `<!--themecolor-->` and `<!--consultation-->` are not files: they resolve to the build year, the version in `package.json`, the ground colour the browser chrome takes, and the page the consultation button leads to.
 - **Styles are a semantic layer over brand primitives.** [src/site.css](src/site.css) aliases the gold ramp and the neutrals in [brand/tokens.css](brand/tokens.css) into names like `--surface` and `--accent-ink`, then redefines that layer for the dark, light, and slate themes. A component reads the semantic name, so a theme is one block of overrides.
-- **The geometry is square.** The radius tokens are zero, and a block is separated by its ground and the rule around it rather than by a card. `--surface` and `--surface-raised` follow from each theme's own raised ground, so a card is never described per theme.
+- **The geometry is square.** The radius tokens are zero, and a block is separated by its ground and the rule around it rather than by a card. `--surface` follows from each theme's own raised ground, so a card is never described per theme.
 - **Glass is spent where a reader looks through it.** The bar and the menu panel take a backdrop filter; `.ambient` is the fixed field of light that gives the blur something to sample, which is why `body` paints no background of its own. Where the blur cannot run, and for a reader who asks for less transparency, one block of token overrides puts both back to opaque.
 - **One sprite carries every mark.** [partials/icons.html](partials/icons.html) holds sixteen of them: eight drawn on a 24-unit grid for the interface and eight on a 64-unit grid for the spot art. Every base shape is `currentColor` and every emphasis is `var(--accent)`, so a mark takes the ink and the accent of whichever theme it lands in.
 - **Theme and language resolve before the first paint.** An inline script in `partials/headcommon.html` reads the stored choice, so neither arrives as a flash of the other. `data-theme` on the root is the resolved value and `data-theme-choice` is the preference behind it, which is `dark` until someone picks otherwise.

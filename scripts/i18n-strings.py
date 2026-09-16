@@ -15,6 +15,11 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKIP_BLOCKS = re.compile(r'<(script|style|svg)\b.*?</\1>', re.S | re.I)
+# A page names a shared block, and the build year, version and consultation
+# target, by writing a marker the build resolves. One of those sits inside an
+# href, where it closes the tag early and leaves the rest of it reading as
+# visible text, so the markers come out before anything else is measured.
+MARKER = re.compile(r'<!--.*?-->', re.S)
 TAG = re.compile(r'<[^>]+>')
 ATTRS = re.compile(r'(?:aria-label|alt|title)="([^"]*)"')
 TITLE = re.compile(r'<title>(.*?)</title>', re.S | re.I)
@@ -34,6 +39,7 @@ def pages():
 
 
 def strings(html):
+    html = MARKER.sub('', html)
     found = []
     for match in TITLE.findall(html) + DESC.findall(html):
         found.append(tidy(match))
