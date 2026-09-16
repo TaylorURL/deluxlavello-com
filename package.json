@@ -2,27 +2,40 @@
   "name": "deluxlavello-com",
   "private": true,
   "license": "UNLICENSED",
-  "version": "2026.38.1",
+  "version": "2026.38.2",
   "description": "Delux Financial Solutions — credit education, credit building, and financial guidance in Houston, TX.",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir node_modules/.delux-ssr && node scripts/prerender.js",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "npm run build && node scripts/check-behaviour.mjs",
-    "i18n": "python3 scripts/i18n-strings.py"
+    "i18n": "npm run build && python3 scripts/i18n-strings.py"
   },
   "engines": {
     "node": "22.x"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-react": "^5.2.0",
+    "autoprefixer": "^10.6.1",
     "eslint": "^10.9.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.11.0",
+    "jsdom": "^28.0.1",
+    "postcss": "^8.5.28",
     "prettier": "^3.9.6",
-    "vite": "^7.1.3",
-    "jsdom": "^28.0.1"
+    "tailwindcss": "^3.4.19",
+    "vite": "^7.1.3"
+  },
+  "dependencies": {
+    "@taylorurl/split-rail": "github:TaylorURL/split-rail#v2026.36.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
   }
 }

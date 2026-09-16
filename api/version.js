@@ -2,6 +2,6 @@
 // from the host's record of it. Never cached: a cached answer would report a
 // build that is no longer being served.
 export default function handler(request, response) {
-  response.setHeader('Cache-Control', 'no-store, max-age=0')
-  response.status(200).json({ build: process.env.VERCEL_GIT_COMMIT_SHA || 'dev' })
+  response.setHeader('Cache-Control', 'no-store, max-age=0');
+  response.status(200).json({ build: process.env.VERCEL_GIT_COMMIT_SHA || 'dev' });
 }
