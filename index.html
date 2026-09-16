@@ -3,333 +3,282 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- The build writes each route's title, description, canonical, social tags
+         and structured data in place of the block below. The dev server serves
+         this shell as it stands, and the page restates its own title once it runs. -->
+    <!--route-head-->
     <title>Delux Financial Solutions | Credit Education in Houston, TX</title>
-    <meta
-      name="description"
-      content="Credit education, credit building, and financial guidance in Houston, Texas. Virtual and mobile in-person consultations available by appointment."
-    />
-    <link rel="canonical" href="https://deluxlavello.com/" />
-    <meta property="og:type" content="website" />
+    <!--/route-head-->
     <meta property="og:site_name" content="Delux Financial Solutions" />
-    <meta property="og:title" content="Delux Financial Solutions | Credit Education in Houston, TX" />
-    <meta
-      property="og:description"
-      content="Credit education, credit building, and financial guidance in Houston, Texas. Virtual and mobile in-person consultations available by appointment."
-    />
-    <meta property="og:url" content="https://deluxlavello.com/" />
     <meta property="og:image" content="https://deluxlavello.com/og-card.png" />
-    <!--headcommon-->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "@id": "https://deluxlavello.com/#organization",
-        "name": "Delux Financial Solutions",
-        "legalName": "Delux L Avello LLC",
-        "url": "https://deluxlavello.com/",
-        "logo": "https://deluxlavello.com/brand/logo.png",
-        "image": "https://deluxlavello.com/og-card.png",
-        "email": "support@deluxlavello.com",
-        "telephone": "+1-770-758-6195",
-        "description": "Credit education, credit building, and financial guidance in Houston, Texas. Virtual and mobile in-person consultations available by appointment.",
-        "founder": { "@id": "https://deluxlavello.com/#educator" },
-        "sameAs": [
-          "https://www.instagram.com/deluxlavellollc",
-          "https://www.facebook.com/people/Delux-L-Avello/61584260922640/",
-          "https://www.tiktok.com/@deluxbydarianavello",
-          "https://www.youtube.com/@deluxbydarianavello"
-        ],
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Houston",
-          "addressRegion": "TX",
-          "addressCountry": "US"
+    <script>
+      // Runs before the first paint, so a stored choice never arrives as a flash of
+      // the wrong theme. The document is the one source of the resolved value:
+      // everything after this reads data-theme rather than storage.
+      //
+      // Dark is the default rather than the system preference, because the brand is
+      // a gold mark on a near-black ground. System is one of the four choices in the
+      // footer picker for anyone who wants it.
+      (function () {
+        var root = document.documentElement;
+        var stored = null;
+        try {
+          stored = localStorage.getItem('delux-theme');
+        } catch (ignored) {}
+        var dark = !window.matchMedia || window.matchMedia('(prefers-color-scheme: dark)').matches;
+        root.setAttribute('data-theme-choice', stored || 'dark');
+        root.setAttribute(
+          'data-theme',
+          !stored ? 'dark' : stored === 'system' ? (dark ? 'dark' : 'light') : stored,
+        );
+        try {
+          if (localStorage.getItem('delux-lang') === 'es') root.lang = 'es';
+        } catch (ignored) {}
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- The dark ground the site opens on, filled from the token at build time. The
+         script rewrites it to whatever the chosen theme actually paints, so this is
+         what the browser chrome takes before the module runs and on a visit that
+         never runs it. -->
+    <meta name="theme-color" content="<!--themecolor-->" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://deluxlavello.com/og-card.png" />
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="/brand/logo-mark-148.webp"
+      fetchpriority="high"
+    />
+    <link rel="preconnect" href="https://sunday.tail1f78d7.ts.net" crossorigin />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/source-sans-3-latin-variable.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/source-serif-4-latin-variable.woff2"
+      crossorigin
+    />
+    <script>
+      (function () {
+        var endpoint = 'https://sunday.tail1f78d7.ts.net/report';
+        var site = 'Delux Financial Solutions';
+        var sent = 0;
+        // Nothing the page can intercept reaches the visitor's console. Each error
+        // is reported first and swallowed second, so the report is made whether or
+        // not the suppression holds. What survives is written by the browser's own
+        // network layer, which no page script can reach.
+        var loud = false;
+        var held = [];
+        try {
+          if (location.search.indexOf('console=on') > -1)
+            localStorage.setItem('reporter-console', '1');
+          if (location.search.indexOf('console=off') > -1)
+            localStorage.removeItem('reporter-console');
+          loud = localStorage.getItem('reporter-console') === '1';
+        } catch (ignored) {}
+        // An extension injects its scripts into the page, so a rejection thrown
+        // inside one arrives at this handler with nothing of the site in its stack.
+        // A stack naming only extension scripts describes the visitor's browser;
+        // one carrying a single site frame is the site's.
+        function extensionOnly(stack) {
+          var schemes = String(stack || '').match(/[a-z][a-z0-9+.-]*:\/\//gi);
+          if (!schemes) return false;
+          for (var i = 0; i < schemes.length; i += 1) {
+            var scheme = schemes[i].slice(0, -3).toLowerCase();
+            if (scheme.slice(-9) !== 'extension') return false;
+          }
+          return true;
         }
-      }
-    </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "@id": "https://deluxlavello.com/#educator",
-        "name": "Darian Avello",
-        "jobTitle": "The Credit Coach",
-        "url": "https://deluxlavello.com/about/",
-        "worksFor": { "@id": "https://deluxlavello.com/#organization" }
-      }
-    </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "@id": "https://deluxlavello.com/#website",
-        "url": "https://deluxlavello.com/",
-        "name": "Delux Financial Solutions",
-        "inLanguage": "en-US",
-        "publisher": { "@id": "https://deluxlavello.com/#organization" }
-      }
-    </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FinancialService",
-        "@id": "https://deluxlavello.com/#business",
-        "name": "Delux Financial Solutions",
-        "legalName": "Delux L Avello LLC",
-        "parentOrganization": { "@id": "https://deluxlavello.com/#organization" },
-        "url": "https://deluxlavello.com/",
-        "logo": "https://deluxlavello.com/brand/logo.png",
-        "image": "https://deluxlavello.com/og-card.png",
-        "telephone": "+1-770-758-6195",
-        "email": "support@deluxlavello.com",
-        "description": "Credit education, credit building, and financial guidance in Houston, Texas. Virtual and mobile in-person consultations available by appointment.",
-        "areaServed": { "@type": "City", "name": "Houston" },
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Houston",
-          "addressRegion": "TX",
-          "addressCountry": "US"
-        },
-        "hasOfferCatalog": {
-          "@type": "OfferCatalog",
-          "name": "Services",
-          "itemListElement": [
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "Credit Building",
-                "url": "https://deluxlavello.com/services/credit-building/"
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "Credit Growth",
-                "url": "https://deluxlavello.com/services/credit-growth/"
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "Credit Building + Credit Growth",
-                "url": "https://deluxlavello.com/services/credit-building-and-growth/"
-              }
-            },
-            {
-              "@type": "Offer",
-              "itemOffered": {
-                "@type": "Service",
-                "name": "Debt Lawsuit Response Support",
-                "url": "https://deluxlavello.com/services/debt-lawsuit-response/"
-              }
+        // A request the page makes writes its own failure to the console when it
+        // fails, and a collector that cannot be reached would then be the loudest
+        // thing on the page. The same request issued inside a worker writes
+        // nothing, so reports travel that way while the page is alive.
+        var unloading = false;
+        var worker = null;
+        var workerFailed = false;
+        function transport() {
+          if (worker || workerFailed) return worker;
+          try {
+            var source =
+              "self.onmessage=function(e){fetch(e.data.endpoint,{method:'POST',body:e.data.body}).then(function(){},function(){})}";
+            worker = new Worker(
+              URL.createObjectURL(new Blob([source], { type: 'text/javascript' })),
+            );
+          } catch (ignored) {
+            workerFailed = true;
+          }
+          return worker;
+        }
+        function send(body) {
+          // On the way out the worker dies with the page, and the console goes with
+          // it, so the beacon's survival is worth more than its silence.
+          if (!unloading) {
+            var channel = transport();
+            if (channel) {
+              channel.postMessage({ endpoint: endpoint, body: body });
+              return;
             }
-          ]
+          }
+          if (navigator.sendBeacon) {
+            navigator.sendBeacon(endpoint, body);
+          } else {
+            fetch(endpoint, { method: 'POST', body: body, keepalive: true }).catch(function () {});
+          }
         }
-      }
+        addEventListener('pagehide', function () {
+          unloading = true;
+        });
+        // Everything swallowed stays readable on the page itself, so a live console
+        // with the flag off still answers what happened.
+        function hold(kind, message, stack) {
+          if (held.length < 50)
+            held.push({ kind: kind, message: String(message), stack: String(stack || '') });
+        }
+        window.__reporter = {
+          held: held,
+          replay: function () {
+            return held.slice();
+          },
+        };
+        function report(kind, message, stack) {
+          hold(kind, message, stack);
+          if (sent >= 10) return; // a page stuck in an error loop stops at ten
+          if (extensionOnly(stack)) return;
+          sent += 1;
+          try {
+            send(
+              JSON.stringify({
+                site: site,
+                kind: kind,
+                message: String(message || 'Unknown error').slice(0, 1500),
+                stack: String(stack || '').slice(0, 4000),
+                url: location.href,
+                userAgent: navigator.userAgent,
+              }),
+            );
+          } catch (ignored) {}
+        }
+        function flatten(args, from) {
+          var parts = [];
+          for (var i = from; i < args.length; i += 1) {
+            var piece = args[i];
+            if (piece && piece.stack) {
+              parts.push(piece.stack);
+            } else if (typeof piece === 'object') {
+              try {
+                parts.push(JSON.stringify(piece));
+              } catch (ignored) {
+                parts.push(String(piece));
+              }
+            } else {
+              parts.push(String(piece));
+            }
+          }
+          return parts.join(' ');
+        }
+        // Capture phase, because element load failures fire error events that do not bubble.
+        window.addEventListener(
+          'error',
+          function (event) {
+            try {
+              if (event.target && event.target !== window && event.target.tagName) {
+                // A preload is a hint the browser is allowed to drop. Googlebot's
+                // renderer cancels the ones it does not need in time, and dropping
+                // one fires the same error event a failed fetch does. Nothing the
+                // visitor sees is missing: the stylesheet still asks for the font
+                // through @font-face, and an element whose own fetch fails fires
+                // its own error event. Reporting a hint the browser chose not to
+                // use files a ticket for behaviour that is by design.
+                var rel = (event.target.rel || '').toLowerCase();
+                if (
+                  event.target.tagName.toLowerCase() === 'link' &&
+                  (rel === 'preload' || rel === 'modulepreload' || rel === 'prefetch')
+                ) {
+                  return;
+                }
+                report(
+                  'resource',
+                  'Failed to load ' +
+                    event.target.tagName.toLowerCase() +
+                    ': ' +
+                    (event.target.src || event.target.href || ''),
+                );
+              } else {
+                report('uncaught', event.message, event.error && event.error.stack);
+              }
+            } finally {
+              if (!loud) event.preventDefault();
+            }
+          },
+          true,
+        );
+        window.addEventListener('unhandledrejection', function (event) {
+          try {
+            var reason = event.reason;
+            report(
+              'rejection',
+              reason && reason.message ? reason.message : reason,
+              reason && reason.stack,
+            );
+          } finally {
+            if (!loud) event.preventDefault();
+          }
+        });
+        // A library writing to these is addressing whoever maintains the site rather
+        // than whoever is reading the page, so the message travels to the Pi instead
+        // of to the visitor's console.
+        ['error', 'warn', 'trace'].forEach(function (level) {
+          var original = console[level];
+          console[level] = function () {
+            report('console', flatten(arguments, 0));
+            if (loud) original.apply(console, arguments);
+          };
+        });
+        var originalAssert = console.assert;
+        console.assert = function (condition) {
+          if (condition) return;
+          report('console', 'Assertion failed: ' + flatten(arguments, 1));
+          if (loud) originalAssert.apply(console, arguments);
+        };
+        if (window.fetch) {
+          var originalFetch = window.fetch;
+          window.fetch = function (input) {
+            var target = typeof input === 'string' ? input : (input && input.url) || '';
+            // Reports about the reporter's own request would loop, so the endpoint passes through unwrapped.
+            if (target.indexOf(endpoint) === 0) return originalFetch.apply(window, arguments);
+            return originalFetch.apply(window, arguments).then(
+              function (response) {
+                if (response.status >= 500)
+                  report('http', 'HTTP ' + response.status + ' from ' + target.split('?')[0]);
+                return response;
+              },
+              function (error) {
+                report(
+                  'network',
+                  (error && error.message ? error.message : String(error)) +
+                    ' fetching ' +
+                    target.split('?')[0],
+                );
+                throw error;
+              },
+            );
+          };
+        }
+      })();
     </script>
   </head>
   <body>
-    <!--header-->
-    <main id="main">
-      <section class="hero">
-        <div class="container hero__inner">
-          <div class="hero__say">
-            <h1 class="display">Build credit that opens doors.</h1>
-            <p class="hero__lede">
-              Delux Financial Solutions is a credit education and credit-building practice in Houston, Texas.
-            </p>
-            <div class="cta-row">
-              <a class="btn btn--gold" href="/contact/">Schedule a Consultation</a>
-              <a class="btn btn--ghost" href="/services/">Compare the Paths</a>
-            </div>
-          </div>
-          <ul class="hero__marks">
-            <li>
-              <svg class="hero__art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-gauge" /></svg>
-              <b>Know the Number</b>
-              <i>What the band means, and what moves it.</i>
-            </li>
-            <li>
-              <svg class="hero__art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-plan" /></svg>
-              <b>Follow a Written Plan</b>
-              <i>Every step carries the reason it is there.</i>
-            </li>
-            <li>
-              <svg class="hero__art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-foundation" /></svg>
-              <b>Keep the Habits</b>
-              <i>They outlast the engagement that taught them.</i>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="section__head">
-            <span class="eyebrow">Services</span>
-            <h2 class="display">Four clear paths</h2>
-            <p>Pick the one that sounds like the situation. A consultation confirms the fit.</p>
-          </div>
-          <ol class="index">
-            <li>
-              <a href="/services/credit-building/">
-                <svg class="row-art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-foundation" /></svg>
-                <b>Credit Building</b>
-                <i>Establish a foundation, or rebuild after setbacks, while learning how credit works.</i>
-                <em>Explore</em>
-              </a>
-            </li>
-            <li>
-              <a href="/services/credit-growth/">
-                <svg class="row-art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-growth" /></svg>
-                <b>Credit Growth</b>
-                <i>Strengthen credit that already exists, with guidance focused on the whole profile.</i>
-                <em>Explore</em>
-              </a>
-            </li>
-            <li>
-              <a href="/services/credit-building-and-growth/">
-                <svg class="row-art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-combined" /></svg>
-                <b>Credit Building + Credit Growth</b>
-                <i>Build the foundation, then keep developing it as the profile matures.</i>
-                <em>Explore</em>
-              </a>
-            </li>
-            <li>
-              <a href="/services/debt-lawsuit-response/">
-                <svg class="row-art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-shield" /></svg>
-                <b>Debt Lawsuit Response Support</b>
-                <i>Understand a consumer debt lawsuit, organize the documents, prepare the next step.</i>
-                <em>Explore</em>
-              </a>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="section__head">
-            <span class="eyebrow">Know the Numbers</span>
-            <h2 class="display">The figures behind a decision</h2>
-            <p>A lender reads three things: the band, the file, and the share of credit in use.</p>
-          </div>
-          <div class="figure-bento">
-            <!--credit-figures-->
-          </div>
-          <a class="btn btn--ghost" href="/education/">Read the Education Section</a>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="section__head">
-            <h2 class="display">First call to real progress</h2>
-          </div>
-          <table class="spec">
-            <caption class="visually-hidden">
-              The four stages of working with Delux Financial Solutions
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Stage</th>
-                <th scope="col">What Happens</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row"><span class="spec__step">01</span> Schedule a Consultation</th>
-                <td>A conversation about the situation, the goals, and which path fits.</td>
-              </tr>
-              <tr>
-                <th scope="row"><span class="spec__step">02</span> Review the Credit Picture</th>
-                <td>A walk through the reports and the history, so the starting point is known.</td>
-              </tr>
-              <tr>
-                <th scope="row"><span class="spec__step">03</span> Follow the Plan</th>
-                <td>A written plan with the reasoning attached to every step in it.</td>
-              </tr>
-              <tr>
-                <th scope="row"><span class="spec__step">04</span> Keep Building</th>
-                <td>Guidance that continues as the profile develops and the goals move on.</td>
-              </tr>
-            </tbody>
-          </table>
-          <a class="btn btn--ghost" href="/how-it-works/">See the Full Process</a>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container split">
-          <div class="split__lead">
-            <h2 class="display">Understand your credit</h2>
-            <p>Strong decisions start with the fundamentals. These three cover most of them.</p>
-          </div>
-          <ul class="split__list">
-            <li>
-              <a href="/education/#credit-reports">
-                <svg class="row-art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-report" /></svg>
-                <b>Credit Reports</b>
-                <i>What a report contains, who compiles it, and how to read one.</i>
-              </a>
-            </li>
-            <li>
-              <a href="/education/#credit-scores">
-                <svg class="row-art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-gauge" /></svg>
-                <b>Credit Scores</b>
-                <i>The five factors behind a score, and the weight each one carries.</i>
-              </a>
-            </li>
-            <li>
-              <a href="/education/#credit-utilization">
-                <svg class="row-art" aria-hidden="true" viewBox="0 0 64 64"><use href="#a-usage" /></svg>
-                <b>Credit Utilization</b>
-                <i>Why the share of credit in use matters, and how to hold it down.</i>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="container">
-          <div class="figure-split">
-            <!--coach-portrait-->
-            <div class="figure-split__lead">
-              <h2 class="display">Education first, always</h2>
-              <div class="prose">
-                <p>
-                  Delux L Avello LLC provides the programs, the structure, and the support. Darian Avello, The Credit
-                  Coach, brings the education.
-                </p>
-              </div>
-              <div class="cta-row">
-                <a class="btn btn--ghost" href="/about/">Meet the Credit Coach</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="cta-band">
-        <div class="container cta-band__inner">
-          <div class="cta-band__say">
-            <h2 class="display">Ready to take the first step?</h2>
-            <p>
-              Virtual and mobile in-person consultations, by appointment. The first one carries no charge and no
-              obligation.
-            </p>
-          </div>
-          <div class="cta-row">
-            <a class="btn btn--gold" href="/contact/">Schedule a Consultation</a>
-            <a class="btn btn--ghost" href="tel:+17707586195">Call (770) 758-6195</a>
-          </div>
-        </div>
-      </section>
-    </main>
-    <!--footer-->
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

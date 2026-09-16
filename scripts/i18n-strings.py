@@ -1,9 +1,11 @@
 """List the visible English strings on the site, and what i18n/es.json still owes.
 
-Run it from the project root. With no arguments it prints the strings that have
-no Spanish yet; with --all it prints every string it found.
+The pages are written as React components, so the strings are read from the
+built documents, where every page is already rendered. `npm run i18n` builds
+first. With no arguments it prints the strings that have no Spanish yet; with
+--all it prints every string it found.
 
-    python3 scripts/i18n-strings.py
+    npm run i18n
     python3 scripts/i18n-strings.py --all
 """
 
@@ -15,10 +17,8 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SKIP_BLOCKS = re.compile(r'<(script|style|svg)\b.*?</\1>', re.S | re.I)
-# A page names a shared block, and the build year, version and consultation
-# target, by writing a marker the build resolves. One of those sits inside an
-# href, where it closes the tag early and leaves the rest of it reading as
-# visible text, so the markers come out before anything else is measured.
+# React separates adjacent pieces of text with empty comments, and the shell
+# marks the block the build fills. Neither is text a reader sees.
 MARKER = re.compile(r'<!--.*?-->', re.S)
 TAG = re.compile(r'<[^>]+>')
 ATTRS = re.compile(r'(?:aria-label|alt|title)="([^"]*)"')
@@ -32,8 +32,11 @@ def tidy(text):
 
 
 def pages():
-    for path in sorted(ROOT.glob('**/*.html')):
-        if any(part in {'node_modules', 'dist'} for part in path.parts):
+    dist = ROOT / 'dist'
+    if not dist.is_dir():
+        sys.exit('No build to read. Run npm run i18n, which builds first.')
+    for path in sorted(dist.glob('**/*.html')):
+        if any(part.startswith('__') for part in path.relative_to(dist).parts):
             continue
         yield path
 
