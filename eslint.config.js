@@ -35,8 +35,8 @@ export default [
   },
   js.configs.recommended,
   {
-    // Build scripts, tests and the config files run in node.
-    files: ['scripts/**/*.{js,mjs}', '*.config.js', 'api/**/*.js'],
+    // Build scripts, tests, the config files and the routing middleware run in node.
+    files: ['scripts/**/*.{js,mjs}', '*.config.js', 'api/**/*.js', 'middleware.js'],
     languageOptions: {
       ecmaVersion: 2023,
       sourceType: 'module',
