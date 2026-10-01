@@ -250,12 +250,26 @@
           report('console', 'Assertion failed: ' + flatten(arguments, 1));
           if (loud) originalAssert.apply(console, arguments);
         };
+        // A scheme the network never carries - mailto:, tel:, sms:, javascript: -
+        // is refused by the browser before a request is made, so a fetch of one
+        // rejects identically on every connection in the world and describes
+        // nothing about this site. Only an absolute address carries a scheme: a
+        // path, a protocol-relative address and a bare name are all this origin.
+        function offNetwork(target) {
+          var scheme = String(target).match(/^[a-z][a-z0-9+.-]*:/i);
+          if (!scheme) return false;
+          scheme = scheme[0].toLowerCase();
+          return scheme !== 'http:' && scheme !== 'https:';
+        }
         if (window.fetch) {
           var originalFetch = window.fetch;
           window.fetch = function (input) {
             var target = typeof input === 'string' ? input : (input && input.url) || '';
             // Reports about the reporter's own request would loop, so the endpoint passes through unwrapped.
             if (target.indexOf(endpoint) === 0) return originalFetch.apply(window, arguments);
+            // Nothing is swallowed here: the call is made and its rejection is
+            // the caller's exactly as it was. What it is not is a network fault.
+            if (offNetwork(target)) return originalFetch.apply(window, arguments);
             return originalFetch.apply(window, arguments).then(
               function (response) {
                 if (response.status >= 500)
@@ -263,11 +277,15 @@
                 return response;
               },
               function (error) {
+                // The stack is what separates a request this site made from one
+                // an extension issued through this page's own fetch, and the
+                // handler that reads it is given nothing to read without it.
                 report(
                   'network',
                   (error && error.message ? error.message : String(error)) +
                     ' fetching ' +
                     target.split('?')[0],
+                  error && error.stack,
                 );
                 throw error;
               },
