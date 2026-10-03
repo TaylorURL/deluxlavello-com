@@ -206,12 +206,20 @@
                 ) {
                   return;
                 }
+                // srcset and <picture> mean the address an element fetched is
+                // rarely the one in its src attribute. An image offering a webp
+                // candidate and a png fallback never asks for the png on a
+                // browser that takes the webp, so naming src describes a request
+                // that was never made and sends anyone reading the report to a
+                // file that cannot have failed. currentSrc is the address the
+                // element actually chose; src and href answer for an element
+                // that had no candidates to choose between.
                 report(
                   'resource',
                   'Failed to load ' +
                     event.target.tagName.toLowerCase() +
                     ': ' +
-                    (event.target.src || event.target.href || ''),
+                    (event.target.currentSrc || event.target.src || event.target.href || ''),
                 );
               } else {
                 report('uncaught', event.message, event.error && event.error.stack);
