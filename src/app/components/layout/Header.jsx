@@ -155,8 +155,6 @@ export default function Header() {
               <img
                 className="brand__mark"
                 src="/brand/logo-mark-148.png"
-                srcSet="/brand/logo-mark-148.png 148w, /brand/logo-mark-296.webp 296w"
-                sizes="74px"
                 alt="Delux Financial Solutions"
                 width="148"
                 height="103"
