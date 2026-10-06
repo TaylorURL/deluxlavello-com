@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import ConsultationLink from '@components/ui/ConsultationLink.jsx';
 import Icon from '@components/ui/Icon.jsx';
 import { NAV, SERVICE_GROUPS } from '@constants/practice.js';
+import retryImage from '@lib/retryImage.js';
 import useConsultationHref from '@hooks/useConsultationHref.js';
 import useIsCurrent from '@hooks/useIsCurrent.js';
 
@@ -161,6 +162,7 @@ export default function Header() {
                 loading="eager"
                 fetchPriority="high"
                 decoding="sync"
+                onError={(event) => retryImage(event.currentTarget)}
               />
             </picture>
             <span className="brand__tag">Financial Solutions</span>
