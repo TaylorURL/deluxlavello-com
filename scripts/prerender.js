@@ -66,8 +66,9 @@ const spanishFor = (html) => {
 };
 
 // React writes an image preload beside any image it is told to fetch early.
-// Rendered to a string there is no head to put it in, and the shell already
-// preloads the one image that matters, so these come out of the body.
+// Rendered to a string there is no head to put it in, and an image preload in
+// the body is a second request for a file the element is already asking for,
+// so these come out of it.
 const PRELOAD = /<link\s[^>]*rel="preload"[^>]*as="image"[^>]*\/?>/gi;
 
 // Every document is finished before any script runs, so its first frame owes the
