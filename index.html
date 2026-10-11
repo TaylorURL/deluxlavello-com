@@ -179,6 +179,41 @@
           }
           return parts.join(' ');
         }
+        // An image whose request fails is asked again before the reader loses
+        // it, and the second attempt is made 1200ms after the first. The error
+        // event the first failure fires reaches this handler on the way down to
+        // the element, so it arrives before the element's own handler has even
+        // started the retry - a report sent on it describes one lost request
+        // rather than an empty frame, and the reader whose retry then arrives
+        // had a whole page. What is worth reporting is the frame that stays
+        // empty, so an image is read again once the retry has had its chance
+        // and only one that still has not decoded is filed. A file that is
+        // genuinely gone fails both attempts and reports exactly as before.
+        var RECOVERY_MS = 4000;
+        // The retry asks for the same file with a parameter on the end, so that
+        // is the address an image reports after its second attempt. The reader
+        // was missing the file itself, which is what the report names.
+        function requested(address) {
+          return String(address || '').replace(
+            /([?&])retry=\d+(&|$)/,
+            function (whole, lead, tail) {
+              return tail && lead === '?' ? '?' : tail ? lead : '';
+            },
+          );
+        }
+        function reportLostImage(target) {
+          setTimeout(function () {
+            // Decoded in the end, by the first request or the second.
+            if (target.complete && target.naturalWidth > 0) return;
+            // Taken off the page before the retry could land, so nothing of it
+            // was ever missing from what the reader was looking at.
+            if (target.isConnected === false) return;
+            report(
+              'resource',
+              'Failed to load img: ' + requested(target.currentSrc || target.src || ''),
+            );
+          }, RECOVERY_MS);
+        }
         // Capture phase, because element load failures fire error events that do not bubble.
         window.addEventListener(
           'error',
@@ -207,6 +242,15 @@
                 // file that cannot have failed. currentSrc is the address the
                 // element actually chose; src and href answer for an element
                 // that had no candidates to choose between.
+                //
+                // An image is the one element on this site with a second
+                // attempt behind it, so it is the one whose first failure is
+                // not yet news. A script, a stylesheet and a font are reported
+                // where they fail, because nothing asks for them again.
+                if (event.target.tagName.toLowerCase() === 'img') {
+                  reportLostImage(event.target);
+                  return;
+                }
                 report(
                   'resource',
                   'Failed to load ' +
