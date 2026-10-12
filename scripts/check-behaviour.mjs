@@ -374,5 +374,76 @@ console.log('\nThe closed mega panel takes no clicks');
   check('closed panel is hidden', /visibility:\s*hidden/.test(closed ? closed[1] : ''), true);
 }
 
+console.log('\nA lost image is asked again before the app has hydrated');
+{
+  // The mark in the header is requested while the document is still being
+  // parsed, so whatever asks for it again has to be in the document rather
+  // than in the bundle. These two run the served page's own head script and
+  // fail the mark with nothing hydrated behind it.
+  const open = () => {
+    const dom = new JSDOM(readFileSync(page('/'), 'utf8'), {
+      url: 'https://deluxlavello.com/',
+      runScripts: 'dangerously',
+    });
+    const reports = [];
+    dom.window.navigator.sendBeacon = (endpoint, body) => {
+      reports.push(JSON.parse(body));
+      return true;
+    };
+    return { dom, window: dom.window, reports };
+  };
+  const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+
+  const recovered = open();
+  const mark = recovered.window.document.querySelector('img.brand__mark');
+  const source = recovered.window.document.querySelector('.brand source');
+  check(
+    'the served markup carries no handler of its own',
+    mark.getAttributeNames().filter((name) => name.startsWith('on')).length,
+    0,
+  );
+  mark.dispatchEvent(new recovered.window.Event('error'));
+  await wait(1500);
+  check(
+    'the webp candidates are asked again',
+    source.getAttribute('srcset'),
+    '/brand/logo-mark-148.webp?retry=1 148w, /brand/logo-mark-296.webp?retry=1 296w',
+  );
+  check(
+    'the png fallback is asked again',
+    mark.getAttribute('src'),
+    '/brand/logo-mark-148.png?retry=1',
+  );
+  // The second attempt arrives, so nothing was missing from the page the
+  // reader was looking at and there is nothing to report.
+  Object.defineProperty(mark, 'complete', { value: true });
+  Object.defineProperty(mark, 'naturalWidth', { value: 148 });
+  await wait(3000);
+  check('a recovered image is not reported', recovered.reports.length, 0);
+  recovered.dom.window.close();
+
+  const lost = open();
+  const gone = lost.window.document.querySelector('img.brand__mark');
+  gone.dispatchEvent(new lost.window.Event('error'));
+  await wait(1500);
+  // The second attempt fails as well. One ask per element for the life of the
+  // page, so this does not put the page in a loop.
+  gone.dispatchEvent(new lost.window.Event('error'));
+  await wait(200);
+  check(
+    'nothing is asked a third time',
+    gone.getAttribute('src'),
+    '/brand/logo-mark-148.png?retry=1',
+  );
+  await wait(2700);
+  check('an image that never arrived is reported once', lost.reports.length, 1);
+  check(
+    'the report names the file rather than the retry',
+    lost.reports[0] && lost.reports[0].message,
+    'Failed to load img: https://deluxlavello.com/brand/logo-mark-148.png',
+  );
+  lost.dom.window.close();
+}
+
 console.log(failures ? `\n${failures} failing` : '\nall checks pass');
 process.exit(failures ? 1 : 0);
