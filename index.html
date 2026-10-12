@@ -189,6 +189,79 @@
         // empty, so an image is read again once the retry has had its chance
         // and only one that still has not decoded is filed. A file that is
         // genuinely gone fails both attempts and reports exactly as before.
+        var RETRY_MS = 1200;
+        // Asking again has to be possible before the app is running. The mark in
+        // the header is the first image request of every visit - eager, highest
+        // priority, issued while the document is still being parsed - and the
+        // handler that asked for it again was attached by the app during
+        // hydration, which on a phone is seconds of bundle download and parse
+        // later. A request lost in that gap reached nothing: no second attempt
+        // was ever made, the frame stayed empty for the rest of the visit, and
+        // the reader's report described exactly what they were looking at. This
+        // script is installed before the first byte of the body, so the ask
+        // lives here and the app calls into it rather than carrying its own.
+        //
+        // The second request carries a parameter the first did not, because a
+        // failed fetch leaves a broken entry for that address in the browser's
+        // memory cache and a fresh request for the identical URL is answered out
+        // of it without touching the network. A <picture> chooses the address
+        // rather than the <img>, so the candidates on its <source> elements move
+        // too; static hosting ignores the parameter, and the reporter strips a
+        // query string before it fingerprints, so a genuine second failure files
+        // under the same fingerprint as the first.
+        var state = new WeakMap();
+        function freshen(address) {
+          var url = String(address || '').trim();
+          if (!url || url.slice(0, 5) === 'data:') return address;
+          return url + (url.indexOf('?') > -1 ? '&' : '?') + 'retry=1';
+        }
+        function freshenCandidates(value) {
+          return String(value)
+            .split(',')
+            .map(function (candidate) {
+              var parts = candidate.trim().split(/\s+/);
+              if (!parts[0]) return candidate;
+              parts[0] = freshen(parts[0]);
+              return parts.join(' ');
+            })
+            .join(', ');
+        }
+        // Once per element for the life of the page, so a file that is really
+        // gone cannot put the page in a loop asking for it. True while that one
+        // ask is still owed or in flight, which is what tells a caller whether
+        // this image has anything left to wait for: the same failure reaches
+        // this handler and the element's own, and both are answered the same.
+        function askAgain(target) {
+          if (!target) return false;
+          var reached = state.get(target);
+          if (reached === 'asking') return true;
+          if (reached) return false;
+          state.set(target, 'asking');
+          setTimeout(function () {
+            var picture = target.parentElement;
+            if (picture && picture.tagName && picture.tagName.toLowerCase() === 'picture') {
+              var sources = picture.querySelectorAll('source');
+              for (var i = 0; i < sources.length; i += 1) {
+                var candidates = sources[i].getAttribute('srcset');
+                if (candidates !== null)
+                  sources[i].setAttribute('srcset', freshenCandidates(candidates));
+              }
+            }
+            var srcset = target.getAttribute('srcset');
+            var src = target.getAttribute('src');
+            // Removed rather than blanked: an empty src resolves against the
+            // document and would fetch the page itself. Clearing both re-runs
+            // the picture element's own selection rather than pinning one
+            // candidate of it.
+            target.removeAttribute('srcset');
+            target.removeAttribute('src');
+            state.set(target, 'asked');
+            if (srcset !== null) target.setAttribute('srcset', freshenCandidates(srcset));
+            if (src !== null) target.setAttribute('src', freshen(src));
+          }, RETRY_MS);
+          return true;
+        }
+        window.__askImageAgain = askAgain;
         var RECOVERY_MS = 4000;
         // The retry asks for the same file with a parameter on the end, so that
         // is the address an image reports after its second attempt. The reader
@@ -248,6 +321,7 @@
                 // not yet news. A script, a stylesheet and a font are reported
                 // where they fail, because nothing asks for them again.
                 if (event.target.tagName.toLowerCase() === 'img') {
+                  askAgain(event.target);
                   reportLostImage(event.target);
                   return;
                 }
