@@ -378,8 +378,8 @@ console.log('\nA lost image is asked again before the app has hydrated');
 {
   // The mark in the header is requested while the document is still being
   // parsed, so whatever asks for it again has to be in the document rather
-  // than in the bundle. These two run the served page's own head script and
-  // fail the mark with nothing hydrated behind it.
+  // than in the bundle. These run the served page's own head script and fail
+  // the mark with nothing hydrated behind it.
   const open = () => {
     const dom = new JSDOM(readFileSync(page('/'), 'utf8'), {
       url: 'https://deluxlavello.com/',
@@ -393,6 +393,10 @@ console.log('\nA lost image is asked again before the app has hydrated');
     return { dom, window: dom.window, reports };
   };
   const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+  const decoded = (node, width) => {
+    Object.defineProperty(node, 'complete', { value: true, configurable: true });
+    Object.defineProperty(node, 'naturalWidth', { value: width, configurable: true });
+  };
 
   const recovered = open();
   const mark = recovered.window.document.querySelector('img.brand__mark');
@@ -416,32 +420,59 @@ console.log('\nA lost image is asked again before the app has hydrated');
   );
   // The second attempt arrives, so nothing was missing from the page the
   // reader was looking at and there is nothing to report.
-  Object.defineProperty(mark, 'complete', { value: true });
-  Object.defineProperty(mark, 'naturalWidth', { value: 148 });
+  decoded(mark, 148);
   await wait(3000);
   check('a recovered image is not reported', recovered.reports.length, 0);
   recovered.dom.window.close();
 
+  // A <picture> resolves once, so an <img> whose chosen webp candidate fails
+  // is left empty however well the png underneath it answers. The second ask
+  // is the png: the <source> elements stop offering anything and the element
+  // is pointed at its own address, which it has not yet requested.
+  const fellBack = open();
+  const png = fellBack.window.document.querySelector('img.brand__mark');
+  const offered = fellBack.window.document.querySelector('.brand source');
+  Object.defineProperty(png, 'currentSrc', {
+    value: 'https://deluxlavello.com/brand/logo-mark-148.webp',
+    configurable: true,
+  });
+  png.dispatchEvent(new fellBack.window.Event('error'));
+  await wait(1500);
+  png.dispatchEvent(new fellBack.window.Event('error'));
+  await wait(1500);
+  check('the webp is no longer offered', offered.getAttribute('srcset'), '');
+  check('the png is asked for', png.getAttribute('src'), '/brand/logo-mark-148.png');
+  check('the retry parameter is off the fallback', png.getAttribute('srcset'), null);
+  decoded(png, 148);
+  await wait(4500);
+  check('an image recovered by its fallback is not reported', fellBack.reports.length, 0);
+  fellBack.dom.window.close();
+
   const lost = open();
   const gone = lost.window.document.querySelector('img.brand__mark');
+  Object.defineProperty(gone, 'currentSrc', {
+    value: 'https://deluxlavello.com/brand/logo-mark-148.webp',
+    configurable: true,
+  });
   gone.dispatchEvent(new lost.window.Event('error'));
   await wait(1500);
-  // The second attempt fails as well. One ask per element for the life of the
-  // page, so this does not put the page in a loop.
   gone.dispatchEvent(new lost.window.Event('error'));
-  await wait(200);
-  check(
-    'nothing is asked a third time',
-    gone.getAttribute('src'),
-    '/brand/logo-mark-148.png?retry=1',
-  );
-  await wait(2700);
+  await wait(1500);
+  // Every address the element has is spent, so nothing is asked a third time.
+  gone.dispatchEvent(new lost.window.Event('error'));
+  await wait(1500);
+  check('nothing is asked a third time', gone.getAttribute('src'), '/brand/logo-mark-148.png');
+  await wait(3200);
   check('an image that never arrived is reported once', lost.reports.length, 1);
   check(
-    'the report names the file rather than the retry',
+    'the report names the file the reader lost',
     lost.reports[0] && lost.reports[0].message,
-    'Failed to load img: https://deluxlavello.com/brand/logo-mark-148.png',
+    'Failed to load img: https://deluxlavello.com/brand/logo-mark-148.webp',
   );
+  // The read is taken once per element rather than once per failed attempt,
+  // so waiting past the window of the last one adds no second report.
+  await wait(2500);
+  check('and not once per attempt', lost.reports.length, 1);
   lost.dom.window.close();
 }
 
