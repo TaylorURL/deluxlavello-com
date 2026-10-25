@@ -226,20 +226,80 @@
             })
             .join(', ');
         }
-        // Once per element for the life of the page, so a file that is really
-        // gone cannot put the page in a loop asking for it. True while that one
-        // ask is still owed or in flight, which is what tells a caller whether
-        // this image has anything left to wait for: the same failure reaches
-        // this handler and the element's own, and both are answered the same.
+        // An element in a <picture> has a second address it has never tried:
+        // its own `src`. A <picture> resolves once - the browser picks a
+        // candidate off a <source>, and an <img> whose chosen candidate fails
+        // is left empty for the rest of the visit. It never reaches the png
+        // underneath it, however well that file answers. So the mark's fallback
+        // was unreachable in the one case it exists for, and anything that cost
+        // this client the webp cost it the mark: a request lost on a connection
+        // that has not warmed, a body truncated in the middle, a decode that
+        // fails on arrival. The <source> is taken out of the choice rather than
+        // out of the document, because the app owns those nodes and removing
+        // one from under it breaks its next update. An empty candidate list is
+        // no candidates, so the browser moves on to the <img>.
+        function sameFile(one, other) {
+          function bare(address) {
+            return String(address || '')
+              .split('?')[0]
+              .split('#')[0]
+              .replace(/^[a-z]+:\/\/[^/]+/i, '');
+          }
+          var left = bare(one);
+          return left !== '' && left === bare(other);
+        }
+        function fallbackAddress(target) {
+          var picture = target.parentElement;
+          if (!picture || !picture.tagName || picture.tagName.toLowerCase() !== 'picture')
+            return '';
+          if (!picture.querySelector('source')) return '';
+          var own = target.getAttribute('src');
+          if (!own) return '';
+          // Where the element's own address is the one that failed, dropping the
+          // <source> elements offers nothing it has not already tried.
+          if (sameFile(target.currentSrc, own)) return '';
+          // The first ask put a cache-busting parameter on this address without
+          // ever requesting it. The fallback has never been on the wire, so
+          // there is no failed entry of it to ask past and it goes as written.
+          return requested(own);
+        }
+        function stopOffering(target) {
+          var picture = target.parentElement;
+          if (!picture) return;
+          var sources = picture.querySelectorAll('source');
+          for (var i = 0; i < sources.length; i += 1) sources[i].setAttribute('srcset', '');
+        }
+        // Two asks at most for the life of the page, so a file that is really
+        // gone cannot put the page in a loop asking for it, and they are not the
+        // same ask twice: the first is the same addresses again, for a request
+        // that was simply lost, and the second is the address the element has
+        // not tried. True while an ask is still owed or in flight, which is what
+        // tells a caller whether this image has anything left to wait for: the
+        // same failure reaches this handler and the element's own, and both are
+        // answered the same.
         function askAgain(target) {
           if (!target) return false;
           var reached = state.get(target);
-          if (reached === 'asking') return true;
-          if (reached) return false;
-          state.set(target, 'asking');
+          if (!reached) {
+            reached = { made: 0, flight: false };
+            state.set(target, reached);
+          }
+          if (reached.flight) return true;
+          var fallback = reached.made === 1 ? fallbackAddress(target) : '';
+          if (reached.made >= 2 || (reached.made === 1 && !fallback)) return false;
+          reached.made += 1;
+          reached.flight = true;
+          var again = reached.made === 1;
           setTimeout(function () {
+            reached.flight = false;
+            if (!again) stopOffering(target);
             var picture = target.parentElement;
-            if (picture && picture.tagName && picture.tagName.toLowerCase() === 'picture') {
+            if (
+              again &&
+              picture &&
+              picture.tagName &&
+              picture.tagName.toLowerCase() === 'picture'
+            ) {
               var sources = picture.querySelectorAll('source');
               for (var i = 0; i < sources.length; i += 1) {
                 var candidates = sources[i].getAttribute('srcset');
@@ -248,16 +308,21 @@
               }
             }
             var srcset = target.getAttribute('srcset');
-            var src = target.getAttribute('src');
+            var src = again ? target.getAttribute('src') : fallback;
             // Removed rather than blanked: an empty src resolves against the
             // document and would fetch the page itself. Clearing both re-runs
             // the picture element's own selection rather than pinning one
             // candidate of it.
             target.removeAttribute('srcset');
             target.removeAttribute('src');
-            state.set(target, 'asked');
-            if (srcset !== null) target.setAttribute('srcset', freshenCandidates(srcset));
-            if (src !== null) target.setAttribute('src', freshen(src));
+            if (again) {
+              if (srcset !== null) target.setAttribute('srcset', freshenCandidates(srcset));
+              if (src !== null) target.setAttribute('src', freshen(src));
+            } else if (src) {
+              // The fallback has never been requested, so there is no failed
+              // entry of it in the browser's cache to ask past.
+              target.setAttribute('src', src);
+            }
           }, RETRY_MS);
           return true;
         }
@@ -274,16 +339,34 @@
             },
           );
         }
-        function reportLostImage(target) {
-          setTimeout(function () {
-            // Decoded in the end, by the first request or the second.
+        // One read per element, pushed out by every further failure, so the
+        // window is measured from the element's last attempt rather than its
+        // first and the final ask gets the whole of it. Reading once is also
+        // what makes a lost file one report: the retry's own failure reaches
+        // the handler below and used to schedule a second read of its own, so
+        // every image that was genuinely gone filed the same message twice.
+        // The address reported is the one the reader lost, which is the first
+        // that failed - a fallback the element only reached because the webp
+        // had already gone is not what the report is about.
+        var watch = new WeakMap();
+        function reportLostImage(target, lost) {
+          var seen = watch.get(target);
+          if (!seen) {
+            seen = { lost: lost, timer: 0 };
+            watch.set(target, seen);
+          }
+          if (seen.timer) clearTimeout(seen.timer);
+          seen.timer = setTimeout(function () {
+            seen.timer = 0;
+            // Decoded in the end, by one of the attempts.
             if (target.complete && target.naturalWidth > 0) return;
-            // Taken off the page before the retry could land, so nothing of it
+            // Taken off the page before the asks could land, so nothing of it
             // was ever missing from what the reader was looking at.
             if (target.isConnected === false) return;
             report(
               'resource',
-              'Failed to load img: ' + requested(target.currentSrc || target.src || ''),
+              'Failed to load img: ' +
+                (seen.lost || requested(target.currentSrc || target.src || '')),
             );
           }, RECOVERY_MS);
         }
@@ -321,8 +404,9 @@
                 // not yet news. A script, a stylesheet and a font are reported
                 // where they fail, because nothing asks for them again.
                 if (event.target.tagName.toLowerCase() === 'img') {
+                  var lost = requested(event.target.currentSrc || event.target.src || '');
                   askAgain(event.target);
-                  reportLostImage(event.target);
+                  reportLostImage(event.target, lost);
                   return;
                 }
                 report(
