@@ -190,6 +190,20 @@
         // and only one that still has not decoded is filed. A file that is
         // genuinely gone fails both attempts and reports exactly as before.
         var RETRY_MS = 1200;
+        // Every rule above this one is driven by an error event, and the
+        // commonest shape of a bad connection fires none: a request the
+        // network accepts and never answers. Nothing then hears that the
+        // first attempt is lost, so no second one is made, the address
+        // underneath is never asked for, and the frame stays empty for as
+        // long as the browser is willing to wait on the socket - tens of
+        // seconds on a dropped mobile connection and the rest of the visit on
+        // a half-open one. So an attempt is given a deadline as well as a
+        // handler, and a deadline that passes with the frame still empty is a
+        // failed attempt: the next address is asked for straight away rather
+        // than after the pause a lost request gets, because this one has
+        // already waited. The mark is 11.8 KB, so a window this wide is a
+        // connection that was not going to deliver it.
+        var ATTEMPT_MS = 3000;
         // Asking again has to be possible before the app is running. The mark in
         // the header is the first image request of every visit - eager, highest
         // priority, issued while the document is still being parsed - and the
@@ -210,6 +224,40 @@
         // query string before it fingerprints, so a genuine second failure files
         // under the same fingerprint as the first.
         var state = new WeakMap();
+        function reachedBy(target) {
+          var reached = state.get(target);
+          if (!reached) {
+            reached = { made: 0, flight: false, deadline: 0 };
+            state.set(target, reached);
+          }
+          return reached;
+        }
+        // An attempt that has not filled the frame by its deadline is a failed
+        // attempt, and it is answered exactly as a failed one is.
+        function watchAttempt(target) {
+          var reached = reachedBy(target);
+          if (reached.deadline) clearTimeout(reached.deadline);
+          reached.deadline = setTimeout(function () {
+            reached.deadline = 0;
+            if (target.complete && target.naturalWidth > 0) return;
+            if (target.isConnected === false) return;
+            askAgain(target, true);
+          }, ATTEMPT_MS);
+        }
+        // The attempt answered for itself, so its deadline is spent.
+        function settled(target) {
+          var reached = state.get(target);
+          if (reached && reached.deadline) {
+            clearTimeout(reached.deadline);
+            reached.deadline = 0;
+          }
+        }
+        // True while this image still has an attempt owed or on the wire, so
+        // the frame may yet fill. Bounded by the two asks and their deadlines.
+        function owed(target) {
+          var reached = state.get(target);
+          return !!reached && (reached.flight === true || reached.deadline !== 0);
+        }
         function freshen(address) {
           var url = String(address || '').trim();
           if (!url || url.slice(0, 5) === 'data:') return address;
@@ -277,54 +325,79 @@
         // tells a caller whether this image has anything left to wait for: the
         // same failure reaches this handler and the element's own, and both are
         // answered the same.
-        function askAgain(target) {
+        function askAgain(target, soon) {
           if (!target) return false;
-          var reached = state.get(target);
-          if (!reached) {
-            reached = { made: 0, flight: false };
-            state.set(target, reached);
-          }
+          var reached = reachedBy(target);
           if (reached.flight) return true;
           var fallback = reached.made === 1 ? fallbackAddress(target) : '';
           if (reached.made >= 2 || (reached.made === 1 && !fallback)) return false;
           reached.made += 1;
           reached.flight = true;
           var again = reached.made === 1;
-          setTimeout(function () {
-            reached.flight = false;
-            if (!again) stopOffering(target);
-            var picture = target.parentElement;
-            if (
-              again &&
-              picture &&
-              picture.tagName &&
-              picture.tagName.toLowerCase() === 'picture'
-            ) {
-              var sources = picture.querySelectorAll('source');
-              for (var i = 0; i < sources.length; i += 1) {
-                var candidates = sources[i].getAttribute('srcset');
-                if (candidates !== null)
-                  sources[i].setAttribute('srcset', freshenCandidates(candidates));
+          setTimeout(
+            function () {
+              reached.flight = false;
+              if (!again) stopOffering(target);
+              var picture = target.parentElement;
+              if (
+                again &&
+                picture &&
+                picture.tagName &&
+                picture.tagName.toLowerCase() === 'picture'
+              ) {
+                var sources = picture.querySelectorAll('source');
+                for (var i = 0; i < sources.length; i += 1) {
+                  var candidates = sources[i].getAttribute('srcset');
+                  if (candidates !== null)
+                    sources[i].setAttribute('srcset', freshenCandidates(candidates));
+                }
               }
-            }
-            var srcset = target.getAttribute('srcset');
-            var src = again ? target.getAttribute('src') : fallback;
-            // Removed rather than blanked: an empty src resolves against the
-            // document and would fetch the page itself. Clearing both re-runs
-            // the picture element's own selection rather than pinning one
-            // candidate of it.
-            target.removeAttribute('srcset');
-            target.removeAttribute('src');
-            if (again) {
-              if (srcset !== null) target.setAttribute('srcset', freshenCandidates(srcset));
-              if (src !== null) target.setAttribute('src', freshen(src));
-            } else if (src) {
-              // The fallback has never been requested, so there is no failed
-              // entry of it in the browser's cache to ask past.
-              target.setAttribute('src', src);
-            }
-          }, RETRY_MS);
+              var srcset = target.getAttribute('srcset');
+              var src = again ? target.getAttribute('src') : fallback;
+              // Removed rather than blanked: an empty src resolves against the
+              // document and would fetch the page itself. Clearing both re-runs
+              // the picture element's own selection rather than pinning one
+              // candidate of it.
+              target.removeAttribute('srcset');
+              target.removeAttribute('src');
+              if (again) {
+                if (srcset !== null) target.setAttribute('srcset', freshenCandidates(srcset));
+                if (src !== null) target.setAttribute('src', freshen(src));
+              } else if (src) {
+                // The fallback has never been requested, so there is no failed
+                // entry of it in the browser's cache to ask past.
+                target.setAttribute('src', src);
+              }
+              watchAttempt(target);
+            },
+            soon ? 0 : RETRY_MS,
+          );
           return true;
+        }
+        // The first request is the parser's: it goes out before this script
+        // has an element to hold, and no handler here is ever given it. An
+        // image inside a <picture> is the one whose first attempt is worth a
+        // deadline, because it has an address underneath the one the browser
+        // chose - an image on its own has nowhere to go, and a lazy one has
+        // not been requested yet, so a deadline on either would cancel a
+        // download that was arriving. On this site that is the mark in the
+        // header, the first and highest-priority image request of every visit.
+        function watchServedImages() {
+          var served = document.querySelectorAll('picture > img');
+          for (var i = 0; i < served.length; i += 1) {
+            var node = served[i];
+            if (String(node.getAttribute('loading') || '').toLowerCase() === 'lazy') continue;
+            if (node.complete && node.naturalWidth > 0) continue;
+            if (!node.parentElement || !node.parentElement.querySelector('source')) continue;
+            var reached = reachedBy(node);
+            if (reached.made > 0 || reached.flight || reached.deadline) continue;
+            watchAttempt(node);
+          }
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', watchServedImages);
+        } else {
+          watchServedImages();
         }
         window.__askImageAgain = askAgain;
         var RECOVERY_MS = 4000;
@@ -356,19 +429,31 @@
             watch.set(target, seen);
           }
           if (seen.timer) clearTimeout(seen.timer);
-          seen.timer = setTimeout(function () {
+          var read = function () {
             seen.timer = 0;
             // Decoded in the end, by one of the attempts.
             if (target.complete && target.naturalWidth > 0) return;
             // Taken off the page before the asks could land, so nothing of it
             // was ever missing from what the reader was looking at.
             if (target.isConnected === false) return;
+            // An attempt still owed or still on the wire is a frame that may
+            // yet fill, and filing on it is the mistake #821 fixed one
+            // attempt earlier: a reader whose second request arrived after
+            // this read had already run had a whole page and a report about
+            // it anyway. The window is measured from the moment the last
+            // attempt stops being possible, which the deadline above makes
+            // bounded, so a file that is genuinely gone is still reported.
+            if (owed(target)) {
+              seen.timer = setTimeout(read, RECOVERY_MS);
+              return;
+            }
             report(
               'resource',
               'Failed to load img: ' +
                 (seen.lost || requested(target.currentSrc || target.src || '')),
             );
-          }, RECOVERY_MS);
+          };
+          seen.timer = setTimeout(read, RECOVERY_MS);
         }
         // Capture phase, because element load failures fire error events that do not bubble.
         window.addEventListener(
@@ -405,6 +490,7 @@
                 // where they fail, because nothing asks for them again.
                 if (event.target.tagName.toLowerCase() === 'img') {
                   var lost = requested(event.target.currentSrc || event.target.src || '');
+                  settled(event.target);
                   askAgain(event.target);
                   reportLostImage(event.target, lost);
                   return;
