@@ -8,7 +8,8 @@
 
 Delux Financial Solutions (Delux L Avello LLC) teaches people how credit works and helps them build or rebuild it. Darian Avello, The Credit Coach, is the educator behind it. The site explains the services and the process, and sends visitors to book a free first consultation.
 
-## What's on the site
+<details>
+<summary>What's on the site</summary>
 
 - A page for each service: credit building, credit growth, the two combined, and debt lawsuit response support
 - A credit education page on reports, scores, utilization, payment history and common mistakes
@@ -18,7 +19,10 @@ Delux Financial Solutions (Delux L Avello LLC) teaches people how credit works a
 - Light, dark and slate themes
 - A "Schedule a Consultation" button in the header, and on phones a bar along the bottom with that button and "Call"
 
-## Running it locally
+</details>
+
+<details>
+<summary>Running it locally</summary>
 
 You need Node 22.
 
@@ -33,12 +37,17 @@ Nothing needs configuring locally. The only variable in `.env.example` is `VERCE
 
 Adding a page means a component in `src/app/views/`, a line in `src/app/routeTable.js` and its title and description in `src/app/constants/meta.js`. Spanish text lives in `i18n/es.json`, keyed on the English, and `npm run i18n` (needs Python 3) lists what's missing.
 
+</details>
+
 ## Built with
 
 React 19, React Router 7, Vite 7 and Tailwind CSS 3. Hosted on Vercel.
 
-## License
+<details>
+<summary>License</summary>
 
 Proprietary. Copyright (c) 2026 TaylorURL LLC, all rights reserved. See [LICENSE.md](LICENSE.md).
+
+</details>
 
 Built and maintained by [TaylorURL](https://www.taylorurl.com).
