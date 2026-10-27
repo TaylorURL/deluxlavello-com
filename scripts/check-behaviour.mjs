@@ -474,6 +474,49 @@ console.log('\nA lost image is asked again before the app has hydrated');
   await wait(2500);
   check('and not once per attempt', lost.reports.length, 1);
   lost.dom.window.close();
+
+  // A request the network accepts and never answers fires no error event at
+  // all, so nothing above is ever told the first attempt was lost. Nothing is
+  // dispatched here: the mark simply never arrives, which is what a stalled
+  // socket looks like from the page.
+  const stalled = open();
+  const hung = stalled.window.document.querySelector('img.brand__mark');
+  const held = stalled.window.document.querySelector('.brand source');
+  await wait(3600);
+  check(
+    'a stalled first attempt is asked again without any error event',
+    held.getAttribute('srcset'),
+    '/brand/logo-mark-148.webp?retry=1 148w, /brand/logo-mark-296.webp?retry=1 296w',
+  );
+  await wait(3400);
+  check(
+    'a stalled second attempt reaches the png underneath it',
+    hung.getAttribute('src'),
+    '/brand/logo-mark-148.png',
+  );
+  check('and the webp is no longer offered', held.getAttribute('srcset'), '');
+  decoded(hung, 148);
+  await wait(4500);
+  check('a mark recovered off a stalled request is not reported', stalled.reports.length, 0);
+  stalled.dom.window.close();
+
+  // A reader on a slow connection whose second request is still on the wire
+  // when the recovery window closes had a whole page a moment later. The read
+  // waits for the last attempt to stop being possible rather than filing on a
+  // frame that is still filling.
+  const slow = open();
+  const late = slow.window.document.querySelector('img.brand__mark');
+  Object.defineProperty(late, 'currentSrc', {
+    value: 'https://deluxlavello.com/brand/logo-mark-148.webp',
+    configurable: true,
+  });
+  late.dispatchEvent(new slow.window.Event('error'));
+  await wait(4600);
+  check('nothing is filed while an attempt is still on the wire', slow.reports.length, 0);
+  decoded(late, 74);
+  await wait(4600);
+  check('and nothing is filed once it arrives', slow.reports.length, 0);
+  slow.dom.window.close();
 }
 
 console.log(failures ? `\n${failures} failing` : '\nall checks pass');
