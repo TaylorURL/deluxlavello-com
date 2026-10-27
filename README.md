@@ -3,7 +3,7 @@
 <p align="center">Website for a credit education practice in Houston, Texas, in English and Spanish.</p>
 <p align="center"><a href="https://deluxlavello.com">deluxlavello.com</a></p>
 <p align="center">
-  <img src="https://img.shields.io/badge/version-2026.44.0-B89A63?style=for-the-badge" alt="Version 2026.44.0" />
+  <img src="https://img.shields.io/badge/version-2026.44.1-B89A63?style=for-the-badge" alt="Version 2026.44.1" />
 </p>
 
 Delux Financial Solutions (Delux L Avello LLC) teaches people how credit works and helps them build or rebuild it. Darian Avello, The Credit Coach, is the educator behind it. The site explains the services and the process, and sends visitors to book a free first consultation.
