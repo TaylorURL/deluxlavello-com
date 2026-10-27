@@ -37,6 +37,8 @@ Adding a page means a component in `src/app/views/`, a line in `src/app/routeTab
 
 React 19, React Router 7, Vite 7 and Tailwind CSS 3. Hosted on Vercel.
 
----
+## License
 
-Built and maintained by [TaylorURL](https://www.taylorurl.com). Proprietary, see [LICENSE.md](LICENSE.md).
+Proprietary. Copyright (c) 2026 TaylorURL LLC, all rights reserved. See [LICENSE.md](LICENSE.md).
+
+Built and maintained by [TaylorURL](https://www.taylorurl.com).
