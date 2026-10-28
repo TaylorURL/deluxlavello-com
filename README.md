@@ -6,7 +6,7 @@ Website for a credit education practice in Houston, Texas, in English and Spanis
 
 [deluxlavello.com](https://deluxlavello.com)
 
-<img src="https://img.shields.io/badge/version-2026.44.2-B89A63?style=for-the-badge" alt="Version 2026.44.2" />
+<img src="https://img.shields.io/badge/version-2026.44.3-B89A63?style=for-the-badge" alt="Version 2026.44.3" />
 
 Explains the services and the process, then sends people to book a free first consultation. React, prerendered per route. Spanish is swapped in place in the browser.
 
@@ -31,7 +31,8 @@ Explains the services and the process, then sends people to book a free first co
 
 </details>
 
-## Running it locally
+<details>
+<summary>Running it locally</summary>
 
 Needs Node 22.
 
@@ -44,6 +45,8 @@ npm run i18n    # build, then list strings missing from i18n/es.json (Python 3)
 ```
 
 Nothing needs configuring locally. The only variable in `.env.example` is `VERCEL_GIT_COMMIT_SHA`, which Vercel sets on each build.
+
+</details>
 
 <details>
 <summary>Adding a page</summary>
