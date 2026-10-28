@@ -31,7 +31,8 @@ Explains the services and the process, then sends people to book a free first co
 
 </details>
 
-## Running it locally
+<details>
+<summary>Running it locally</summary>
 
 Needs Node 22.
 
@@ -44,6 +45,8 @@ npm run i18n    # build, then list strings missing from i18n/es.json (Python 3)
 ```
 
 Nothing needs configuring locally. The only variable in `.env.example` is `VERCEL_GIT_COMMIT_SHA`, which Vercel sets on each build.
+
+</details>
 
 <details>
 <summary>Adding a page</summary>
