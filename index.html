@@ -455,6 +455,27 @@
           };
           seen.timer = setTimeout(read, RECOVERY_MS);
         }
+        // Every file this site asks for is served from this origin. The
+        // stylesheet, the scripts, the fonts and the images are all built into
+        // the deploy and referenced by path, and nothing in the pages reaches
+        // for a file on another host. So a resource element pointing somewhere
+        // else was put into the document by something other than this site.
+        // Chrome's own translation does exactly that: translating a page
+        // injects a stylesheet from www.gstatic.com, and that request failing
+        // fires the same error event one of our own files would. Nothing the
+        // reader came for is missing when it fails, and no change in this
+        // repository can reach it, so it is not this site's to report.
+        function elsewhere(address) {
+          var text = String(address || '');
+          if (text.slice(0, 2) !== '//' && !/^[a-z][a-z0-9+.-]*:/i.test(text)) return false;
+          try {
+            return new URL(text, location.href).origin !== location.origin;
+          } catch (ignored) {
+            // A browser without URL cannot be asked where the address points,
+            // and a report that may be ours is worth more than silence.
+            return false;
+          }
+        }
         // Capture phase, because element load failures fire error events that do not bubble.
         window.addEventListener(
           'error',
@@ -472,6 +493,15 @@
                 if (
                   event.target.tagName.toLowerCase() === 'link' &&
                   (rel === 'preload' || rel === 'modulepreload' || rel === 'prefetch')
+                ) {
+                  return;
+                }
+                // Checked before the retry below as well as before the report,
+                // because asking again for a file this site never requested is
+                // a second request to someone else's host on the reader's
+                // connection.
+                if (
+                  elsewhere(event.target.currentSrc || event.target.src || event.target.href || '')
                 ) {
                   return;
                 }

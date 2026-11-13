@@ -519,5 +519,64 @@ console.log('\nA lost image is asked again before the app has hydrated');
   slow.dom.window.close();
 }
 
+console.log('\nOnly the files this site serves are reported');
+{
+  // Chrome's own translation injects a stylesheet from www.gstatic.com into
+  // the page it is translating. It is not one of ours, nothing the reader
+  // came for is missing when it fails, and no change here can reach it.
+  const open = () => {
+    const dom = new JSDOM(readFileSync(page('/'), 'utf8'), {
+      url: 'https://deluxlavello.com/',
+      runScripts: 'dangerously',
+    });
+    const reports = [];
+    dom.window.navigator.sendBeacon = (endpoint, body) => {
+      reports.push(JSON.parse(body));
+      return true;
+    };
+    return { dom, window: dom.window, reports };
+  };
+  const wait = (ms) => new Promise((done) => setTimeout(done, ms));
+  const fail = (window, node, address, attribute) => {
+    node.setAttribute(attribute, address);
+    window.document.head.appendChild(node);
+    node.dispatchEvent(new window.Event('error'));
+  };
+
+  const injected = open();
+  const foreign = injected.window.document.createElement('link');
+  foreign.rel = 'stylesheet';
+  fail(
+    injected.window,
+    foreign,
+    'https://www.gstatic.com/_/translate_http/_/ss/k=translate_http.tr.x/m=el_main_css',
+    'href',
+  );
+  check('a stylesheet from another host is not reported', injected.reports.length, 0);
+
+  const ours = injected.window.document.createElement('link');
+  ours.rel = 'stylesheet';
+  fail(injected.window, ours, '/assets/site-missing.css', 'href');
+  check('a stylesheet of this site still is', injected.reports.length, 1);
+  check(
+    'and the report names it',
+    injected.reports[0] && injected.reports[0].message,
+    'Failed to load link: https://deluxlavello.com/assets/site-missing.css',
+  );
+
+  // An image from another host is left alone as well: asking again would put
+  // a second request to somebody else's server on the reader's connection.
+  const elsewhereImage = injected.window.document.createElement('img');
+  fail(injected.window, elsewhereImage, 'https://www.gstatic.com/x.png', 'src');
+  await wait(5000);
+  check('an image from another host is not reported', injected.reports.length, 1);
+  check(
+    'and it is not asked again',
+    elsewhereImage.getAttribute('src'),
+    'https://www.gstatic.com/x.png',
+  );
+  injected.dom.window.close();
+}
+
 console.log(failures ? `\n${failures} failing` : '\nall checks pass');
 process.exit(failures ? 1 : 0);
