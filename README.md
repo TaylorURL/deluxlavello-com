@@ -6,7 +6,7 @@ Website for a credit education practice in Houston, Texas, in English and Spanis
 
 [deluxlavello.com](https://deluxlavello.com)
 
-<img src="https://img.shields.io/badge/version-2026.46.0-B89A63?style=for-the-badge" alt="Version 2026.46.0" />
+<img src="https://img.shields.io/badge/version-2026.46.1-B89A63?style=for-the-badge" alt="Version 2026.46.1" />
 
 Explains the services and the process, then sends people to book a free first consultation. React, prerendered per route.
 
